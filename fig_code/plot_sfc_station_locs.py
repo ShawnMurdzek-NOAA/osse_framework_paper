@@ -43,7 +43,7 @@ ax = fig.add_subplot(1, 1, 1, projection=proj)
 for f, s in zip(station_files, station_names):
     df = pd.read_csv(f, skiprows=5)
     ax.plot(df['lon'].loc[0], df['lat'].loc[0], c='k', marker='o', markersize=8, transform=ccrs.PlateCarree())
-    #ax.text(df['lon'].loc[0]+0.5, df['lat'].loc[0]+0.5, s, fontweight='bold', 
+    #ax.text(df['lon'].loc[0]-0.2, df['lat'].loc[0]-0.2, s, fontweight='bold', 
     #        transform=ccrs.PlateCarree())
 
 ax.set_extent([-120, -72, 21, 50])

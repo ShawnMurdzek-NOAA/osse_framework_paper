@@ -97,8 +97,8 @@ for i, season in enumerate(['winter', 'spring']):
             MRMS_frac_pct[pct] = np.nanpercentile(MRMS_fraction, pct, axis=0)
         #ax.plot(bin_ctrs, MRMS_frac_pct[50], 'r-', linewidth=2.5)
         ax.fill_between(bin_ctrs, MRMS_frac_pct[25], MRMS_frac_pct[75], color='r', alpha=0.35)
-        ax.fill_between(bin_ctrs, MRMS_frac_pct[0], MRMS_frac_pct[100], color='r', alpha=0.15)
         #ax.fill_between(bin_ctrs, MRMS_frac_pct[10], MRMS_frac_pct[90], color='r', alpha=0.15)
+        ax.fill_between(bin_ctrs, MRMS_frac_pct[0], MRMS_frac_pct[100], color='r', alpha=0.15)
         ax.plot(bin_ctrs, MRMS_frac_pct[0], 'r-', linewidth=0.25)
         ax.plot(bin_ctrs, MRMS_frac_pct[100], 'r-', linewidth=0.25)
 
