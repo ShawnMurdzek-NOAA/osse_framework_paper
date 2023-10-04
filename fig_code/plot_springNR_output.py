@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as mcm
 import xarray as xr
 import cartopy.feature as cfeature
+import cartopy.crs as ccrs
 import pyart.graph.cm_colorblind as art_cm
 
 import pyDA_utils.plot_model_data as pmd
@@ -57,7 +58,9 @@ out_obj = []
 for i, (fname, s) in enumerate(zip(upp_files, subtitles)):
     print('plotting %s' % fname)
     ds = xr.open_dataset(fname, engine='pynio')
-    out = pmd.PlotOutput([ds], 'upp', fig, nrows, ncols, i+1)
+    # For some reason, using LambertConformal for the projection messes up the filled contour plot,
+    # so use PlateCarree.
+    out = pmd.PlotOutput([ds], 'upp', fig, nrows, ncols, i+1, proj=ccrs.PlateCarree())
     out.contour(cont_field, ingest_kw={'smooth':True, 'gauss_sigma':5}, 
                 cnt_kw={'colors':'gray', 'levels':np.arange(263.15, 320, 4), 'linewidths':0.75})
     out.contourf(contf_field, cbar=False, cntf_kw={'cmap':art_cm.HomeyerRainbow, 
@@ -77,11 +80,12 @@ for i, (fname, s) in enumerate(zip(upp_files, subtitles)):
     #out.ax_title(size=14)
     out_obj.append(out)
 
-cbar = plt.colorbar(out_obj[0].cax, ax=[o.ax for o in out_obj[2:]], orientation='horizontal', aspect=35, pad=0.1)
+cb_ax = fig.add_axes([0.05, 0.07, 0.9, 0.03])
+cbar = plt.colorbar(out_obj[0].cax, cax=cb_ax, orientation='horizontal', aspect=35, pad=0.1)
 cbar.set_label('composite reflectivity (dB$Z$)', size=16)
 cbar.ax.tick_params(labelsize=12)
 
-plt.subplots_adjust(left=0.02, bottom=0.2, right=0.98, top=0.95, hspace=0.1, wspace=0.05)
+plt.subplots_adjust(left=0.02, bottom=0.12, right=0.98, top=0.95, hspace=0.1, wspace=0.05)
 plt.savefig(save_fname)
 plt.close()
 
