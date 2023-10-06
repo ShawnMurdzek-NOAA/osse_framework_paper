@@ -24,7 +24,6 @@ import xarray as xr
 import metpy.calc as mc
 from metpy.units import units
 import sys
-import yaml
 
 import pyDA_utils.bufr as bufr
 
@@ -47,6 +46,10 @@ date_range = [[dt.datetime(2022, 2, 1, 0) + dt.timedelta(hours=i) for i in range
 # Dataset names
 name1 = 'Sim Obs'
 name2 = 'Real Obs'
+
+# Option to perform an elevation adjustment for P and T
+elv_adjust_prs = True
+elv_adjust_T = True
 
 # Output file name
 save_fname = '../figs/ObDiffs2D.pdf'
@@ -105,10 +108,6 @@ bufr_df_sim = bufr_df_sim.loc[np.logical_or(np.logical_and(bufr_df_sim['DHR'] > 
 bufr_df_real.reset_index(inplace=True, drop=True)
 bufr_df_sim.reset_index(inplace=True, drop=True)
 
-# Apply rounding so precision in simulated obs matches real obs
-bufr_df_sim = bufr.match_bufr_prec(bufr_df_sim)
-print('Done adjusting precision')
-
 # Only retain obs from desired subset
 boo = np.zeros(len(bufr_df_sim))
 for s in subsets:
@@ -129,6 +128,28 @@ bufr_df_real.reset_index(inplace=True, drop=True)
 bufr_df_sim.reset_index(inplace=True, drop=True)
 print('Done subsetting obs')
 
+# Perform pressure and temperature adjustment
+g = 9.81
+Rd = 287.04
+lr = 0.0065  # Based on US Standard Atmosphere, see Part 4, Table I from https://ntrs.nasa.gov/citations/19770009539
+if elv_adjust_prs or elv_adjust_T:
+    elv_diff = bufr_df_real['ELV'].values - bufr_df_sim['ELV'].values
+    Tind = np.where(~np.isnan(bufr_df_sim['TOB']))[0]
+    if elv_adjust_prs:
+        # Use hydrostatic balance for the adjustment
+        bufr_df_sim['POB_original'] = bufr_df_sim['POB'].copy()
+        bufr_df_sim.loc[Tind, 'POB'] = (bufr_df_sim['POB'][Tind] *
+                                        np.exp(-g * elv_diff[Tind] / (Rd * (bufr_df_sim['TOB'][Tind] + 273.15))))
+    if elv_adjust_T:
+        # Adjust based on a specified lapse rate
+        bufr_df_sim['TOB_original'] = bufr_df_sim['TOB'].copy()
+        bufr_df_sim.loc[Tind, 'TOB'] = bufr_df_sim['TOB'][Tind] - (lr * elv_diff[Tind])
+    print('Done performing prs and/or T adjustment')
+
+# Apply rounding so precision in simulated obs matches real obs
+bufr_df_sim = bufr.match_bufr_prec(bufr_df_sim)
+print('Done adjusting precision')
+
 # Compute wind speed and direction from U and V components
 bufr_df_sim = bufr.compute_wspd_wdir(bufr_df_sim)
 bufr_df_real = bufr.compute_wspd_wdir(bufr_df_real)
@@ -148,11 +169,11 @@ vnames = {'POB':'Pressure (hPa)',
           'PWO':'Precipitable Water (mm)'}
 
 nbins = {'POB':30,
-         'TOB':30,
+         'TOB':25,
          'QOB':30,
          'WDIR':30,
          'WSPD':30,
-         'PWO':30}
+         'PWO':24}
 
 rng = {'POB':(-12, 12),
        'TOB':(-5, 5),

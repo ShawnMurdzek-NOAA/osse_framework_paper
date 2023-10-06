@@ -17,6 +17,7 @@ Date Created: 14 February 2023
 #---------------------------------------------------------------------------------------------------
 
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 import numpy as np
 import datetime as dt
 import pandas as pd
@@ -56,8 +57,8 @@ plot_param = [{'save_fname':'../figs/ObDiffs3D.pdf',
 # SIDs to exclude.
 # Some aircraft have bad temperature data (e.g., T < -50 degC below 500 hPa), but TQM < 2, so
 # the values are still plotted
-#exclude_sid = ['00000775']
-exclude_sid = []
+exclude_sid = ['00000775']
+#exclude_sid = []
 
 
 #---------------------------------------------------------------------------------------------------
@@ -113,7 +114,25 @@ bufr_df_sim = bufr.match_bufr_prec(bufr_df_sim)
 bufr_df_sim = bufr.compute_wspd_wdir(bufr_df_sim)
 bufr_df_real = bufr.compute_wspd_wdir(bufr_df_real)
 
-# Loop over each plot
+
+#---------------------------------------------------------------------------------------------------
+# Create Plots
+#---------------------------------------------------------------------------------------------------
+
+vnames = {'POB':'Pressure \n(hPa)',
+          'TOB':'Temperature \n(K)',
+          'QOB':'Specific Humidity \n(mg kg$^{-1}$)',
+          'WDIR':'Wind \nDirection ($^{\circ}$)',
+          'WSPD':'Wind \nSpeed (m s$^{-1}$)',
+          'PWO':'Precipitable Water (mm)'}
+
+dbins = {'TOB':np.linspace(-5, 5, 31),
+          'QOB':np.linspace(-4000, 4000, 31),
+          'WDIR':np.linspace(-180, 180, 31),
+          'WSPD':np.linspace(-9, 9, 31)}
+
+letters = ['a', 'b', 'c', 'd']
+
 for param in plot_param:
 
     print()
@@ -132,8 +151,8 @@ for param in plot_param:
     subset_sim = bufr_df_sim.loc[ind].copy()
     subset_real = bufr_df_real.loc[ind].copy()
 
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(8, 5), sharey=True)
-    plt.subplots_adjust(left=0.1, bottom=0.08, right=0.98, top=0.88, hspace=0.4, wspace=0.1)
+    fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(8, 5), sharey=True)
+    plt.subplots_adjust(left=0.1, bottom=0.14, right=1.05, top=0.92, hspace=0.4, wspace=0.1)
     for i, v in enumerate(param['obs_vars']):
         print('Plotting %s' % v)
         ax = axes[i]
@@ -153,39 +172,37 @@ for param in plot_param:
             if param['vcoord'] == 'POB': vert = subset_sim.loc[cond, 'POB'].values
             elif param['vcoord'] == 'ZOB': vert = subset_sim.loc[cond, 'ZOB'].values
     
-        # Compute various percentiles for each bin along the vertical coordinate
-        var_percentiles = {}
-        pcts = [0, 10, 25, 50, 75, 90, 100]
-        for p in pcts:
-            var_percentiles[p] = np.ones(len(vbins)-1) * np.nan
-        for j in range(len(vbins) - 1):
+        # Plot differences using a 2D histogram
+        nhist = len(vbins) - 1
+        diff_hist = np.zeros([len(dbins[v])-1, nhist])
+        for j in range(nhist):
             binned_diff = diff[np.logical_and(vert <= vbins[j:(j+2)].max(), 
                                vert > vbins[j:(j+2)].min())]
-            if len(binned_diff) > 0:
-                for p in pcts:
-                    var_percentiles[p][j] = np.nanpercentile(binned_diff, p)
-
-        if param['vcoord'] == 'POB': bin_ctr = np.log10(vbins[:-1] + (0.5 * (vbins[1:] - vbins[:-1])))
-        elif param['vcoord'] == 'ZOB': bin_ctr = vbins[:-1] + (0.5 * (vbins[1:] - vbins[:-1]))
-        ax.plot(var_percentiles[50], bin_ctr, 'b-', lw=2)
-        ax.fill_betweenx(bin_ctr, var_percentiles[25], var_percentiles[75], color='b', alpha=0.4)
-        ax.fill_betweenx(bin_ctr, var_percentiles[10], var_percentiles[90], color='b', alpha=0.2)
-        ax.plot(var_percentiles[0], bin_ctr, 'b-', lw=0.75)
-        ax.plot(var_percentiles[100], bin_ctr, 'b-', lw=0.75)
-        ax.axvline(0, c='k', lw='1')
+            diff_hist[:, j] = np.histogram(binned_diff, bins=dbins[v])[0]
+        if param['vcoord'] == 'POB': vbin_ctr = np.log10(vbins[:-1] + (0.5 * (vbins[1:] - vbins[:-1])))
+        elif param['vcoord'] == 'ZOB': vbin_ctr = vbins[:-1] + (0.5 * (vbins[1:] - vbins[:-1]))
+        vbin_ctr_2d, dbin_ctr_2d = np.meshgrid(vbin_ctr, 0.5*(dbins[v][1:] + dbins[v][:-1]))
+        cax = ax.pcolormesh(dbin_ctr_2d, vbin_ctr_2d, diff_hist, cmap='Reds', 
+                            norm=colors.LogNorm(vmin=1, vmax=2000))
+        print(np.nanmax(diff_hist))       
+ 
         ax.grid()
 
         if param['vcoord'] == 'POB':
-            ax.set_ylim([np.log10(vbins.max()), np.log10(vbins.min())])
-            ticks = np.array([1000, 850, 700, 500, 400, 300, 200, 100])
+            ax.set_ylim([np.log10(vbins.max()), np.log10(150)])
+            ticks = np.array([1000, 850, 700, 500, 400, 300, 200])
             ax.set_yticks(np.log10(ticks))
             ax.set_yticklabels(ticks)
         elif param['vcoord'] == 'ZOB':
             ax.set_ylim([vbins.min(), vbins.max()])
-        ax.set_title('%s ($n$ = %d)' % (v, len(diff)), size=12)
-        ax.set_xlabel('%s' % meta[v]['units'], size=12)
+        ax.set_xlabel(vnames[v], size=12)
+        ax.text(0.9*np.amin(dbins[v]), np.log10(167), '%s)' % letters[i], size=12, weight='bold',
+                backgroundcolor='white')
 
-    axes[0].set_ylabel('%s (%s)' % (param['vcoord'], meta[param['vcoord']]['units']), size=12)
+    axes[0].set_ylabel('pressure (hPa)', size=12)
+
+    cbar = plt.colorbar(cax, ax=axes, orientation='vertical', pad=0.01, aspect=30, extend='max')
+    cbar.set_label('counts', size=12)
 
     plt.suptitle("Differences: Synthetic $-$ Real", size=18)
     plt.savefig(param['save_fname'])
