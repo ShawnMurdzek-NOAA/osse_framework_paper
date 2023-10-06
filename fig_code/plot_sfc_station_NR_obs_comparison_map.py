@@ -100,6 +100,11 @@ for season in ['Winter', 'Spring']:
             station_adj_var[j] = np.var(zscore1d) / station_adj_n[j]
             station_t[j] = station_mean_z[j] / np.sqrt(station_adj_var[j])
             station_pvalue[j] = 2 * (1 - ss.t.cdf(np.abs(station_t[j]), station_adj_n[j])) 
+    
+        print()
+        print('Max and min standardized anomalies (%s, %s):' % (season, v))
+        print(np.amax(station_mean_z))
+        print(np.amin(station_mean_z))
 
         all_pvalue.append(station_pvalue)
 
@@ -108,7 +113,7 @@ for season in ['Winter', 'Spring']:
         nonsig_ind = station_pvalue > sig_level
         for ind, m in zip([sig_ind, nonsig_ind], ['*', 'o']):
             cax = ax.scatter(station_lon[ind], station_lat[ind], c=station_mean_z[ind], s=40, 
-                             cmap='bwr', vmin=-3, vmax=3, marker=m, linewidths=0.5, edgecolors='k',
+                             cmap='bwr', vmin=-1.6, vmax=1.6, marker=m, linewidths=0.5, edgecolors='k',
                              transform=ccrs.PlateCarree(), alpha=1)
     
         ax.set_title('%s) %s' % (labels[i], var_names[v]), size=14)
