@@ -25,19 +25,12 @@ import pyDA_utils.gsi_fcts as gsi
 #---------------------------------------------------------------------------------------------------
 
 # Input pickle file
-pickle_fname = '/work2/noaa/wrfruc/murdzek/src/py_scripts/gsi/omf_diag_paper_assim.pkl'
+pickle_fname = '/work2/noaa/wrfruc/murdzek/src/py_scripts/gsi/omf_diag_spring_assim.pkl'
 
 # Variables to plot
 omf_vars = ['ps', 't', 'q', 'u', 'v', 'pw']
-omf_units = []
-
-# Option to group observation classes into larger subsets
-use_subsets = True
-ob_subsets = {'raob':[120, 122, 132, 220, 221, 222],
-              'aircft':[130, 131, 133, 134, 135, 230, 231, 232, 233, 234, 235],
-              'sfc':[180, 181, 182, 183, 187, 188, 192, 193, 194, 195, 280, 281, 282, 284, 287, 
-                     288, 292, 293, 294, 295],
-              'gps':[153]}
+omf_labels = [r'$P_{sfc}$ (hPa)', r'$T$ (K)', r'$Q_{v}$ (kg kg$^{-1}$)', r'$U$ (m s$^{-1}$)', 
+              r'$V$ (m s$^{-1}$)', 'PWAT (kg m$^{-2}$)']
 
 # Output directory and string to add to output file names
 out_file = '../figs/DAstats.pdf'
@@ -49,20 +42,27 @@ out_file = '../figs/DAstats.pdf'
 
 with open(pickle_fname, 'rb') as handle:
     all_data = pickle.load(handle)
-    plot_data = all_data['plot_data']
+    output_stats = all_data['output_stats']
 
-ob_groups = list(ob_subsets.keys())
+data_names = list(output_stats[omf_vars[0]].keys())
+ob_groups_all = list(output_stats[omf_vars[0]][data_names[0]].keys())[::-1]
 
 
 #---------------------------------------------------------------------------------------------------
 # Make Plot
 #---------------------------------------------------------------------------------------------------
 
-fig, axes = plt.subplots(nrows=6, ncols=2, figsize=(6, 10), sharey=True)
-plt.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.92)
+fig, axes = plt.subplots(nrows=6, ncols=2, figsize=(8, 10))
+plt.subplots_adjust(left=0.12, bottom=0.08, right=0.98, top=0.94, hspace=0.3, wspace=0.1)
 
-letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-for i, (var, units) in enumerate(zip(omf_vars, omf_units)):
+for i, (var, ylabel) in enumerate(zip(omf_vars, omf_labels)):
+
+    # Only plot observation type if there are obs that are assimilated
+    ob_groups = []
+    for ob in ob_groups_all:
+        bool_array = np.array([output_stats[var][d][ob]['n_assim'] > 0 for d in data_names])
+        if np.all(bool_array):
+            ob_groups.append(ob)
 
     # Plot data 
     ylocs = np.arange(len(ob_groups))
@@ -73,26 +73,53 @@ for i, (var, units) in enumerate(zip(omf_vars, omf_units)):
         offsets = bar_hgt * np.arange(-(nsims-1), nsims, 2)  / 2.
     else:
         offsets = bar_hgt * np.arange(-int(nsims / 2), int(nsims / 2) + 0.5)
+
     for key, off, c in zip(data_names, offsets, colors):
+
+        # Old method: Plot raw counts
+        #ax_ct = axes[i, 0]
+        #n_assim = [output_stats[var][key][ob]['n_assim'] for ob in ob_groups]
+        #ax_ct.barh(ylocs+off, n_assim, height=bar_hgt, label=key, color=c)
+        #ax_ct.set_xscale('log')
+        #ax_ct.set_xlim([1, 3e7])
+    
+        # New method: Plot ob counts as percentages of number of obs assimilated in reality
         ax_ct = axes[i, 0]
-        ax_ct.barh(ylocs+off, plot_data[var][key]['n_assim'], height=bar_hgt, label=key, color=c)
-        ax_ct.set_xlabel('# obs assimilated', size=14)
-        ax_ct.set_xscale('log')
-        ax_ct.set_xlim(left=1)
-        
+        frac_assim = (np.array([output_stats[var][key][ob]['n_assim'] for ob in ob_groups]) /
+                      np.array([output_stats[var][data_names[0]][ob]['n_assim'] for ob in ob_groups]))
+        ax_ct.barh(ylocs+off, 100*frac_assim, height=bar_hgt, label=key, color=c)
+        ax_ct.set_xlim([90, 115])
+
         ax_omb = axes[i, 1]
-        ax_omb.boxplot(plot_data[var][key]['omb'], positions=(ylocs+off), widths=bar_hgt, vert=False, patch_artist=True,
-                       boxprops={'facecolor':c}, showfliers=False)
-        ax_omb.set_xlabel('O$-$B (%s)' % units, size=14)
+        boxes = []
+        for ob in ob_groups:
+            boxes.append({'med': output_stats[var][key][ob]['omb_p50'],
+                          'q1': output_stats[var][key][ob]['omb_p25'],
+                          'q3': output_stats[var][key][ob]['omb_p75'],
+                          'whislo': output_stats[var][key][ob]['omb_whislo'],
+                          'whishi': output_stats[var][key][ob]['omb_whishi']})
+        ax_omb.bxp(boxes, positions=(ylocs+off), widths=bar_hgt, vert=False, patch_artist=True,
+                   boxprops={'facecolor':c}, showfliers=False)
 
     for j in range(2):
         axes[i, j].grid(axis='x')
 
-    axes[i, 0].set_ylabel('observation type', size=14)
-    plt.sca(axes[i, 0])
-    plt.yticks(ticks=ylocs, labels=ob_groups)
+    ax_ct.set_ylabel(ylabel, size=14)
+    ax_ct.set_yticks(ticks=ylocs, labels=ob_groups, size=12)
+    ax_omb.set_yticks(ticks=ylocs, labels=['']*len(ylocs))
     
-axes[0, 0].legend(fontsize=12)
+axes[0, 0].legend(fontsize=12, loc='lower right')
+
+axes[-1, 0].set_xlabel('number of obs assimilated\n relative to reality (%)', size=14)
+axes[-1, 1].set_xlabel('O$-$B', size=14)
+
+# Subplot labels
+letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l']
+for i, let in enumerate(letters):
+    plt.gcf().text(0.495 + 0.45*(i%2), 0.92 - 0.149*(int(i/2)), '%s)' % let, fontsize=12, 
+                   fontweight='bold', backgroundcolor='white')
+
+plt.suptitle('Spring Period', size=18)
 
 plt.savefig(out_file) 
 plt.close()
