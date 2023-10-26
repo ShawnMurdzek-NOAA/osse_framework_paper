@@ -76,25 +76,26 @@ nthres = len(ceil_thres)
 
 labels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
-fig = plt.figure(figsize=(8, 5.5))
+fig = plt.figure(figsize=(8, 5))
 axes = []
 for i, season in enumerate(['Winter', 'Spring']):
 
     for j, thres in enumerate(ceil_thres_ft):
-        ax_num = 1+2*j+i
+        ax_num = 1+j+3*i
         print(ax_num)
-        ax = fig.add_subplot(nthres, 2, ax_num, projection=ccrs.LambertConformal())
+        ax = fig.add_subplot(2, nthres, ax_num, projection=ccrs.LambertConformal())
         for SID in station_ids:
+            rank = all_data[season]['fake_station_rank'][SID]['ceil'][j]
+            if (rank == 1) or (rank == 0):
+                m = '*'
+            else:
+                m = 'o'
             cax = ax.scatter(station_lon[SID], station_lat[SID], 
-                             c=all_data[season]['fake_station_rank'][SID]['ceil'][j], s=40, 
-                             cmap='bwr', vmin=0, vmax=1, marker='o', linewidths=0.5, edgecolors='k',
+                             c=rank, s=40, 
+                             cmap='bwr', vmin=0, vmax=1, marker=m, linewidths=0.5, edgecolors='k',
                              transform=ccrs.PlateCarree(), alpha=1)
  
-        if j == 0:
-            ax.set_title('%s\n%s) %s$-$ft ceiling' % (season, labels[ax_num-1], thres), 
-                         size=14)
-        else:    
-            ax.set_title('%s) %s$-$ft ceiling' % (labels[ax_num-1], thres), size=14)
+        ax.set_title('%s) %s, %s ft' % (labels[ax_num-1], season, thres), size=14)
         ax.set_extent([-120, -72, 21, 50])
         ax.coastlines('50m', edgecolor='gray', linewidth=0.25)
         borders = cfeature.NaturalEarthFeature(category='cultural',
@@ -115,11 +116,11 @@ for i, season in enumerate(['Winter', 'Spring']):
 # Explicitly create an axes for the colorbar using the cax keyword. This appears to be a 
 # necessary step whenever a colorbar is used with CartoPy
 cb_ax = fig.add_axes([0.05, 0.1, 0.9, 0.03])
-cbar = plt.colorbar(cax, cax=cb_ax, ax=axes, orientation='horizontal', pad=0.5, aspect=30)
+cbar = plt.colorbar(cax, cax=cb_ax, ax=axes, orientation='horizontal', pad=0.5, aspect=25)
 cbar.set_label('NR rank (decimal)', size=12)
 
-plt.subplots_adjust(left=0.02, bottom=0.25, right=0.96, top=0.9, wspace=0.25, hspace=0.25)
-plt.suptitle('Surface Station Ceiling Comparison', size=18)
+plt.subplots_adjust(left=0.02, bottom=0.15, right=0.98, top=0.88, wspace=0.05, hspace=0.18)
+plt.suptitle('Surface Station Ceiling Frequency Comparison', size=18)
 plt.savefig(out_fname)
 plt.close()
 
