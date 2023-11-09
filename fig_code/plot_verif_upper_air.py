@@ -42,7 +42,9 @@ plot_options = {'TMP':{'line_type':'sl1l2',
                 'UGRD_VGRD':{'line_type':'vl1l2',
                              'plot_stat':'VECT_RMSE',
                              'xlabel':'Wind RMSE (m s$^{-1}$)'}}
-toggle_pts = True
+toggle_pts = False
+ci = True
+ci_lvl = 0.95
 
 # Valid times (as datetime objects)
 valid_times = {'winter':[dt.datetime(2022, 2, 1, 12) + dt.timedelta(hours=i) for i in range(0, 156, 12)],
@@ -70,7 +72,7 @@ for i, season in enumerate(['winter', 'spring']):
                                  plot_var=var, 
                                  plot_stat=plot_options[var]['plot_stat'],
                                  ob_subset=ob_subset, toggle_pts=toggle_pts, verbose=False, ax=ax,
-                                 mean_legend=False)
+                                 mean_legend=False, ci=ci, ci_lvl=ci_lvl)
         ax.set_title('')
         if (i != 0) or (j != 0):
             ax.get_legend().remove()
