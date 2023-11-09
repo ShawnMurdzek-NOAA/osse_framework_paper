@@ -62,7 +62,7 @@ save_fname = '../figs/VerifSfcDieOff.pdf'
 # Read Data and Create Plot
 #---------------------------------------------------------------------------------------------------
 
-fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(8, 6), sharex=True)
+fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(8, 6), sharex=True, sharey='col')
 plt.subplots_adjust(left=0.11, bottom=0.08, right=0.99, top=0.9, wspace=0.4, hspace=0.13)
 
 for i, season in enumerate(['winter', 'spring']):
