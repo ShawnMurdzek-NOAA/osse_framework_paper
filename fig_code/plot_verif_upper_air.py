@@ -95,7 +95,7 @@ for i, let in enumerate(letters):
     plt.gcf().text(0.12 + 0.305*(i%3), 0.885 - 0.432*(int(i/3)), '%s)' % let, fontsize=12,
                    fontweight='bold', backgroundcolor='white')
 
-plt.suptitle('Upper-Air Verification', size=18)
+plt.suptitle('Upper-Air Verification: %d$-$hr Forecasts' % fcst_lead, size=18)
 plt.savefig(save_fname)
 plt.close()
 
