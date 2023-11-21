@@ -86,7 +86,7 @@ cbar.set_label('composite reflectivity (dB$Z$)', size=16)
 cbar.ax.tick_params(labelsize=12)
 
 plt.subplots_adjust(left=0.02, bottom=0.12, right=0.98, top=0.95, hspace=0.1, wspace=0.05)
-plt.savefig(save_fname)
+plt.savefig(save_fname, dpi=500)
 plt.close()
 
 
