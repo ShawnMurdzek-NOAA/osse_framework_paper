@@ -67,14 +67,15 @@ for i, season in enumerate(['winter', 'spring']):
     ax = axes[i, 0]
     nobj_MRMS = [len(sublist) for sublist in all_obj[season]['MRMS_obj'][eval_time]['size']]
     bplot = ax.boxplot(nobj_MRMS, vert=False, patch_artist=True, medianprops=dict(color='black'),
-                       boxprops=dict(facecolor=[1,0,0,0.35]))
-    ax.plot(len(all_obj[season]['NR_obj'][eval_time]['size']), 1, 'b*', markersize=20)
+                       boxprops=dict(facecolor=[1,0,0,0.35]), 
+                       flierprops=dict(marker='o', markerfacecolor='k'))
+    ax.axvline(len(all_obj[season]['NR_obj'][eval_time]['size']), linewidth=1.5, color='b')
     ax.grid(axis='x')
     ax.yaxis.set_tick_params(labelleft=False)
     ax.set_yticks([])
     ax.set_ylabel(season, size=18)
     ax.set_ylim([0.85, 1.15])
-    ax.text(4900, 1.12, panel_labels[3*i], size=14, fontweight='bold')
+    ax.text(5300, 1.12, panel_labels[3*i], size=14, fontweight='bold')
 
     # Second and third subplots: Histograms
     for j, (var, bins, xscale, xlim) in enumerate(zip(['size', 'max_dbz'], 
@@ -121,7 +122,7 @@ for i, season in enumerate(['winter', 'spring']):
 
 # Adjust left edge of x-axis for histograms. Do this last w/ the spring period, otherwise the
 # right edge is not set far enough to the right
-axes[1, 0].set_xlim(left=0)
+axes[1, 0].set_xlim([0, 6000])
 
 for i, xlabel in enumerate(['number of objects', 'object size (grid boxes)', 
                            'max reflectivity (dB$Z$)']):
