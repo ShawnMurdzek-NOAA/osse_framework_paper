@@ -21,17 +21,35 @@ import metplus_OSSE_scripts.utils.metplus_tools as mt
 #---------------------------------------------------------------------------------------------------
 
 # Input file information
-parent_dir = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/'
-input_sims = {'winter':{'real':{'dir':parent_dir + 'real_red_sims/winter_updated/sfc/output/point_stat',
-                                'color':'r'},
-                        'OSSE':{'dir':parent_dir + 'syn_data_sims/winter_updated/sfc/output/point_stat',
-                                'color':'b'}},
-              'spring':{'real':{'dir':parent_dir + 'real_red_sims/spring/sfc/output/point_stat',
-                                'color':'r'},
-                        'OSSE':{'dir':parent_dir + 'syn_data_sims/spring/sfc/output/point_stat',
-                                'color':'b'}}}
+parent_dir = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_'
+input_sims = {'winter':{'real':{'dir':parent_dir + 'pt_obs/real_red_sims/winter_updated/sfc/output/point_stat',
+                                'color':'r',
+                                'prefix':'point_stat',
+                                'subset':'ADPSFC'},
+                        'OSSE':{'dir':parent_dir + 'pt_obs/syn_data_sims/winter_updated/sfc/output/point_stat',
+                                'color':'b',
+                                'prefix':'point_stat',
+                                'subset':'ADPSFC'},
+                        'OSSE (grid)':{'dir':parent_dir + 'grid_NR/winter/sfc/output/GridStat',
+                                       'color':'gray',
+                                       'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
+                                       'subset':'NR'}},
+              'spring':{'real':{'dir':parent_dir + 'pt_obs/real_red_sims/spring/sfc/output/point_stat',
+                                'color':'r',
+                                'prefix':'point_stat',
+                                'subset':'ADPSFC'},
+                        'OSSE':{'dir':parent_dir + 'pt_obs/syn_data_sims/spring/sfc/output/point_stat',
+                                'color':'b',
+                                'prefix':'point_stat',
+                                'subset':'ADPSFC'},
+                        'OSSE (grid)':{'dir':parent_dir + 'grid_NR/spring/sfc/output/GridStat',
+                                       'color':'gray',
+                                       'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
+                                       'subset':'NR'}}}
+#for season in input_sims.keys():
+#    del input_sims[season]['OSSE (grid)']
+
 plot_stat = 'RMSE'
-ob_subset = 'ADPSFC'
 
 # Other plotting options
 plot_options = {'TMP':{'line_type':'sl1l2',
@@ -76,7 +94,7 @@ for i, season in enumerate(['winter', 'spring']):
                                    plot_var=var, 
                                    plot_lvl=plot_options[var]['plot_lvl'], 
                                    plot_stat=plot_options[var]['plot_stat'],
-                                   ob_subset=ob_subset, toggle_pts=toggle_pts, verbose=False, ax=ax,
+                                   toggle_pts=toggle_pts, verbose=False, ax=ax,
                                    mean_legend=False, ci=ci, ci_lvl=ci_lvl)
         ax.set_title('')
         if (i != 0) or (j != 0):
