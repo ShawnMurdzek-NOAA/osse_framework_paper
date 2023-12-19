@@ -7,4 +7,4 @@
 
 ## Dependencies
 
-The Python environment used for this project is specified in the `environment.yml` file. In addition to these packages, the [pyDA_utils](https://github.com/ShawnMurdzek-NOAA/pyDA_utils) and [metplus_OSSE_scripts](https://github.com/ShawnMurdzek-NOAA/metplus_OSSE_scripts) packages must also be downloaded and added to the `PYTHONPATH` environment variable.
+The Python environment used for this project is specified in the `environment.yml` file. In addition to these packages, the [pyDA_utils (v1.0.0)](https://github.com/ShawnMurdzek-NOAA/pyDA_utils/releases/tag/v1.0.0) and [metplus_OSSE_scripts (v1.0.0)](https://github.com/ShawnMurdzek-NOAA/metplus_OSSE_scripts/releases/tag/v1.0.0) packages must also be downloaded and added to the `PYTHONPATH` environment variable.
