@@ -61,8 +61,8 @@ for i, (fname, s) in enumerate(zip(upp_files, subtitles)):
     # For some reason, using LambertConformal for the projection messes up the filled contour plot,
     # so use PlateCarree.
     out = pmd.PlotOutput([ds], 'upp', fig, nrows, ncols, i+1, proj=ccrs.PlateCarree())
-    out.contour(cont_field, ingest_kw={'smooth':True, 'gauss_sigma':5}, 
-                cnt_kw={'colors':'gray', 'levels':np.arange(263.15, 320, 4), 'linewidths':0.75})
+    out.contour(cont_field, label=False, ingest_kw={'smooth':True, 'gauss_sigma':5}, 
+                cnt_kw={'colors':'gray', 'levels':np.arange(255, 320, 4), 'linewidths':0.75})
     out.contourf(contf_field, cbar=False, cntf_kw={'cmap':art_cm.HomeyerRainbow, 
                                                    'levels':np.arange(5, 75, 5)})
 
