@@ -3,3 +3,5 @@ figs/
 *.pdf
 *.png
 *.pkl
+
+figs_old/

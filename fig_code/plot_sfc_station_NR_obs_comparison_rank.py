@@ -76,7 +76,7 @@ for season in ['Winter', 'Spring']:
     plot_hr = np.array([t.total_seconds() / 3600. for t in all_data[season]['analysis_times']])
     ntimes = len(all_data[season]['analysis_times'])
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(10, 6))
-    plt.subplots_adjust(left=0.06, bottom=0.08, right=1.08, top=0.88, wspace=0.29, hspace=0.37)
+    plt.subplots_adjust(left=0.06, bottom=0.08, right=1.07, top=0.88, wspace=0.29, hspace=0.37)
     ttest_pvalues = {}
 
     all_ranks = []
@@ -105,15 +105,27 @@ for season in ['Winter', 'Spring']:
         #ax.plot(plot_hr, var_percentiles[100], 'r-', lw=0.25)
 
         # Plot rank using histograms
+
+        # Original bins. These bins result very few values in the 0.5 bin owing to a mathematical
+        # artifact
         bin_ctr = np.linspace(0, 1, 31)
         bin_hwidth = 0.5 * (bin_ctr[1] - bin_ctr[0])
         bins = np.array(list(bin_ctr - bin_hwidth) + [bin_ctr[-1] + bin_hwidth])
+        vmax = 55
+
+        # Alternative bins. These bins are more uniform except for the first and last bin, which
+        # have fewer values than the other bins b/c these bins are smaller
+        #bins = np.arange(-0.098888889, 1.2, 0.108888888889)
+        #bin_hwidth = 0.5 * (bins[1] - bins[0])
+        #bin_ctr = bins[:-1] + bin_hwidth
+        #vmax = 140
+
         nhist = all_data[season]['all_rank'][v].shape[-1]
         zscore_hist = np.zeros([nhist, len(bins) - 1])
         for j in range(nhist):
             zscore_hist[j, :] = np.histogram(all_data[season]['all_rank'][v][:, j], bins=bins)[0] 
         bin_ctr_2d, plot_hr_2d = np.meshgrid(bin_ctr, plot_hr)
-        cax = ax.pcolormesh(plot_hr_2d, bin_ctr_2d, zscore_hist, cmap='Reds', vmin=0, vmax=55)
+        cax = ax.pcolormesh(plot_hr_2d, bin_ctr_2d, zscore_hist, cmap='Reds', vmin=0, vmax=vmax)
         print(np.nanmax(zscore_hist))
 
         #ax.grid()
