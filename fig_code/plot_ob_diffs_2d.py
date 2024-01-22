@@ -33,6 +33,8 @@ import pyDA_utils.bufr as bufr
 #---------------------------------------------------------------------------------------------------
 
 # Input BUFR CSV directories
+#bufr_dirs = ['/work2/noaa/wrfruc/murdzek/nature_run_winter/obs/old_obs/perfect_conv_v2/perfect_csv/',
+#             '/work2/noaa/wrfruc/murdzek/nature_run_spring/obs/old_obs/perfect_conv/perfect_csv/']
 bufr_dirs = ['/work2/noaa/wrfruc/murdzek/nature_run_winter/obs/perfect_conv/perfect_csv/',
              '/work2/noaa/wrfruc/murdzek/nature_run_spring/obs/perfect_conv/perfect_csv/']
 
@@ -59,6 +61,9 @@ subsets = ['SFCSHP', 'ADPSFC', 'MSONET', 'GPSIPW']
 
 # Variables to plot
 obs_vars = ['TOB', 'QOB', 'POB', 'WDIR', 'WSPD', 'PWO']
+
+# Option to print number of obs
+print_ob_num = True
 
 # Domain to examine ('all', 'easternUS', 'westernUS')
 domain = 'all'
@@ -211,6 +216,8 @@ for i, (v, l) in enumerate(zip(obs_vars, letters)):
         continue
 
     # Plot differences
+    if print_ob_num:
+        print('{v} ob number = {n}'.format(v=v, n=len(diff)))
     dlim = np.nanpercentile(np.abs(diff), 99)
     hist_out = ax.hist(diff, bins=nbins[v], range=rng[v], lw=0.3, edgecolor='k')
     ax.set_xlabel(vnames[v], size=13)
