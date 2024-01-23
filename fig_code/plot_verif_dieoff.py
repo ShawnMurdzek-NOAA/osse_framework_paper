@@ -22,30 +22,33 @@ import metplus_OSSE_scripts.utils.metplus_tools as mt
 
 # Input file information
 parent_dir = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_'
-input_sims = {'winter':{'real':{'dir':parent_dir + 'pt_obs/real_red_sims/winter_updated/sfc/output/point_stat',
+seasons = ['spring']
+input_sims = {'winter':{'real':{'dir':parent_dir + 'pt_obs/app_orion/sims_real_red_data/winter_updated/sfc/output/point_stat',
                                 'color':'r',
                                 'prefix':'point_stat',
                                 'subset':'ADPSFC'},
-                        'OSSE':{'dir':parent_dir + 'pt_obs/syn_data_sims/winter_updated/sfc/output/point_stat',
+                        'OSSE':{'dir':parent_dir + 'pt_obs/app_orion/sims_syn_data/winter_updated/sfc/output/point_stat',
                                 'color':'b',
                                 'prefix':'point_stat',
                                 'subset':'ADPSFC'},
-                        'OSSE (grid)':{'dir':parent_dir + 'grid_NR/winter/sfc/output/GridStat',
-                                       'color':'gray',
-                                       'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
-                                       'subset':'NR'}},
-              'spring':{'real':{'dir':parent_dir + 'pt_obs/real_red_sims/spring/sfc/output/point_stat',
+                        #'OSSE (grid)':{'dir':parent_dir + 'grid_NR/winter/sfc/output/GridStat',
+                        #               'color':'gray',
+                        #               'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
+                        #               'subset':'NR'}
+                        },
+              'spring':{'real':{'dir':parent_dir + 'pt_obs/app_orion/sims_real_red_data/spring/sfc/output/point_stat',
                                 'color':'r',
                                 'prefix':'point_stat',
                                 'subset':'ADPSFC'},
-                        'OSSE':{'dir':parent_dir + 'pt_obs/syn_data_sims/spring/sfc/output/point_stat',
+                        'OSSE':{'dir':parent_dir + 'pt_obs/app_orion/sims_syn_data/spring/sfc/output/point_stat',
                                 'color':'b',
                                 'prefix':'point_stat',
                                 'subset':'ADPSFC'},
-                        'OSSE (grid)':{'dir':parent_dir + 'grid_NR/spring/sfc/output/GridStat',
-                                       'color':'gray',
-                                       'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
-                                       'subset':'NR'}}}
+                        #'OSSE (grid)':{'dir':parent_dir + 'grid_NR/spring/sfc/output/GridStat',
+                        #               'color':'gray',
+                        #               'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
+                        #               'subset':'NR'}
+                        }}
 #for season in input_sims.keys():
 #    del input_sims[season]['OSSE (grid)']
 
@@ -70,25 +73,28 @@ ci_lvl = 0.95
 
 # Valid times (as datetime objects)
 valid_times = {'winter':[dt.datetime(2022, 2, 1, 10) + dt.timedelta(hours=i) for i in range(158)],
-               'spring':[dt.datetime(2022, 4, 29, 22) + dt.timedelta(hours=i) for i in range(158)]}
+               'spring':[dt.datetime(2022, 4, 29, 22) + dt.timedelta(hours=i) for i in range(36)]}
 
 # Forecast lead times (hrs)
 fcst_lead = [0, 1, 2, 3, 6, 12]
 
-save_fname = '../figs/VerifSfcDieOff.pdf'
+save_fname = '../figs/VerifSfcDieOff_spring_36hr.png'
 
 
 #---------------------------------------------------------------------------------------------------
 # Read Data and Create Plot
 #---------------------------------------------------------------------------------------------------
 
-fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(8, 6), sharex=True, sharey='col')
+fig, axes = plt.subplots(nrows=len(seasons), ncols=3, figsize=(8, 6), sharex=True, sharey='col')
 plt.subplots_adjust(left=0.11, bottom=0.08, right=0.99, top=0.9, wspace=0.4, hspace=0.13)
 
-for i, season in enumerate(['winter', 'spring']):
+for i, season in enumerate(seasons):
     for j, var in enumerate(['TMP', 'SPFH', 'UGRD_VGRD']):
         print('plotting %s %s' % (season, var))
-        ax = axes[i, j]
+        if len(seasons) > 1:
+            ax = axes[i, j]
+        else:
+            ax = axes[j]
         _, ax = mp.plot_sfc_dieoff(input_sims[season], valid_times[season], fcst_lead=fcst_lead, 
                                    line_type=plot_options[var]['line_type'],
                                    plot_var=var, 
@@ -111,7 +117,10 @@ for i, season in enumerate(['winter', 'spring']):
             ax.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
 
 # Subplot labels
-letters = ['a', 'b', 'c', 'd', 'e', 'f']
+if len(seasons) == 1:
+    letters = ['a', 'b', 'c']
+else:
+    letters = ['a', 'b', 'c', 'd', 'e', 'f']
 for i, let in enumerate(letters):
     plt.gcf().text(0.12 + 0.325*(i%3), 0.865 - 0.435*(int(i/3)), '%s)' % let, fontsize=12,
                    fontweight='bold', backgroundcolor='white')

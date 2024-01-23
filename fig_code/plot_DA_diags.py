@@ -25,7 +25,7 @@ import pyDA_utils.gsi_fcts as gsi
 #---------------------------------------------------------------------------------------------------
 
 # Input pickle file
-pickle_fname = '../analysis_code/gsi/omf_diag_spring_assim.pkl'
+pickle_fname = '../analysis_code/gsi/omf_diag_spring_36hr_assim.pkl'
 
 # Variables to plot
 omf_vars = ['ps', 't', 'q', 'u', 'v', 'pw']
@@ -33,7 +33,7 @@ omf_labels = [r'$P_{sfc}$ (hPa)', r'$T$ (K)', r'$Q_{v}$ (kg kg$^{-1}$)', r'$U$ (
               r'$V$ (m s$^{-1}$)', 'PWAT (kg m$^{-2}$)']
 
 # Output directory and string to add to output file names
-out_file = '../figs/DAstats.png'
+out_file = '../figs/DAstats_36hr.png'
 
 
 #---------------------------------------------------------------------------------------------------

@@ -26,16 +26,16 @@ import pyDA_utils.gsi_fcts as gsi
 
 # O-Bs are found in the "ges" files and O-As are found in the "anl" files
 # Can have any number of datasets. Key is the name of the dataset
-tmpl_real_winter = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/real_red_data/winter_updated/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
-tmpl_real_spring = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/real_red_data/spring/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
-tmpl_osse_winter = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data/winter_updated/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
-tmpl_osse_spring = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data/spring_uas_35km/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
+tmpl_real_winter = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/real_red_data_app_orion/winter/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
+tmpl_real_spring = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/real_red_data_app_orion/spring/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
+tmpl_osse_winter = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data_app_orion/winter/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
+tmpl_osse_spring = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data_app_orion/spring/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
 dates_winter = [dt.datetime(2022, 2, 1, 9) + dt.timedelta(hours=i) for i in range(159)]
 dates_spring = [dt.datetime(2022, 4, 29, 21) + dt.timedelta(hours=i) for i in range(159)]
-dates_spring = dates_spring[:27]
+dates_spring = dates_spring[:36]
 
 path_tmpl = {}
-#path_tmpl['real'] = [tmpl_real_spring % (d.strftime('%Y%m%d'), d.strftime('%H')) for d in dates_spring]
+path_tmpl['real'] = [tmpl_real_spring % (d.strftime('%Y%m%d'), d.strftime('%H')) for d in dates_spring]
 path_tmpl['OSSE'] = [tmpl_osse_spring % (d.strftime('%Y%m%d'), d.strftime('%H')) for d in dates_spring]
 dates = dates_spring
 
@@ -51,7 +51,7 @@ data_subset = 'assim'
 sfcobs_uselist = None
 
 # Option to group observation classes into larger subsets
-use_subsets = False
+use_subsets = True
 ob_subsets = {'raob':[120, 122, 132, 220, 221, 222],
               'aircft':[130, 131, 133, 134, 135, 230, 231, 232, 233, 234, 235],
               'sfc':[180, 181, 182, 183, 187, 188, 192, 193, 194, 195, 280, 281, 282, 284, 287, 
@@ -66,10 +66,10 @@ sim2 = 'osse'
 
 # Output directory and string to add to output file names
 out_dir = './'
-out_str = 'UAS'
+out_str = 'spring_36hr'
 
 # Option to save some output statistics to a pickle file
-save_output = False
+save_output = True
 output_fname = '%s/omf_diag_%s_%s.pkl' % (out_dir, out_str, data_subset)
 
 

@@ -183,7 +183,7 @@ for param in plot_param:
         elif param['vcoord'] == 'ZOB': vbin_ctr = vbins[:-1] + (0.5 * (vbins[1:] - vbins[:-1]))
         vbin_ctr_2d, dbin_ctr_2d = np.meshgrid(vbin_ctr, 0.5*(dbins[v][1:] + dbins[v][:-1]))
         cax = ax.pcolormesh(dbin_ctr_2d, vbin_ctr_2d, diff_hist, cmap='Reds', 
-                            norm=colors.LogNorm(vmin=1, vmax=2000))
+                            norm=colors.LogNorm(vmin=1, vmax=8000))
         print(np.nanmax(diff_hist))       
  
         ax.grid()

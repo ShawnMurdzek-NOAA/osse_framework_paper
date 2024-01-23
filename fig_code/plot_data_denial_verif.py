@@ -20,17 +20,13 @@ import metplus_OSSE_scripts.utils.metplus_tools as mt
 #---------------------------------------------------------------------------------------------------
 
 # Directories containing METplus output
-met_dir = {'real':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/real_red_sims',
-           'OSSE':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/syn_data_sims'}
+met_dir = {'real':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app_orion/sims_real_red_data',
+           'OSSE':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app_orion/sims_syn_data'}
 
 # Valid times
 valid_times = {'winter':[dt.datetime(2022, 2, 1, 9) + dt.timedelta(hours=i) for i in range(160)],
                'spring':[dt.datetime(2022, 4, 29, 21) + dt.timedelta(hours=i) for i in range(160)]}
-valid_times['winter'].remove(dt.datetime(2022, 2, 4, 20))
-valid_times['winter'].remove(dt.datetime(2022, 2, 4, 21))
-valid_times['winter'].remove(dt.datetime(2022, 2, 4, 23))
-valid_times['winter'].remove(dt.datetime(2022, 2, 5, 2))
-valid_times['spring'].remove(dt.datetime(2022, 5, 5, 23))
+valid_times = {'spring':[dt.datetime(2022, 4, 29, 21) + dt.timedelta(hours=i) for i in range(36)]}
 
 # Verifying observations
 verif_obs = {'sfc':'ADPSFC', 'upper_air':'ADPUPA'}
@@ -52,8 +48,11 @@ var_dict = {'TMP':{'line_type':'sl1l2', 'name':'temperature', 'stat':'RMSE', 'un
 # Confidence interval level
 ci_lvl = 0.95
 
+# Option to add annotations
+add_annot = False
+
 # Output file name (with %s placeholder for verification type)
-save_fname = '../figs/Candlestick%s.pdf'
+save_fname = '../figs/Candlestick%s_spring_36hr.png'
 
 
 #---------------------------------------------------------------------------------------------------
@@ -114,7 +113,8 @@ for v in verif_obs.keys():
                                  stats[v][dataset][s][exp][fl][varname]['ci_high']],
                                 [off1+off2+off3, off1+off2+off3], 'k-', lw=1.5)
             ax.grid(axis='x')
-            ax.axhline(4, ls='--', c='k')
+            if add_annot:
+                ax.axhline(4, ls='--', c='k')
             ax.set_xlim(var_dict[varname]['lim_%s' % v])
             if j == 1:
                 ax.set_xlabel('%s (%s)' % (var_dict[varname]['name'], var_dict[varname]['units']), size=14)
@@ -130,9 +130,10 @@ for v in verif_obs.keys():
         xloc = 0.3925 + 0.2815*(j%3)
         plt.gcf().text(xloc, 0.91 - 0.44*(int(j/3)), '%s)' % let, fontsize=12,
                        fontweight='bold', backgroundcolor='white')
-        for k, season in enumerate(valid_times.keys()):
-            plt.gcf().text(xloc, 0.6 - 0.44*(int(j/3)) + 0.2*k, season, fontsize=12, 
-                           backgroundcolor='white', rotation='vertical')
+        if add_annot:
+            for k, season in enumerate(valid_times.keys()):
+                plt.gcf().text(xloc, 0.6 - 0.44*(int(j/3)) + 0.2*k, season, fontsize=12, 
+                               backgroundcolor='white', rotation='vertical')
 
     if v == 'sfc':
         plt.suptitle('Surface RMSE Differences (Exp $-$ Ctrl)', size=18)

@@ -22,30 +22,33 @@ import metplus_OSSE_scripts.utils.metplus_tools as mt
 
 # Input file information
 parent_dir = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_'
-input_sims = {'winter':{'real':{'dir':parent_dir + 'pt_obs/real_red_sims/winter_updated/upper_air/output/point_stat',
+seasons = ['spring']
+input_sims = {'winter':{'real':{'dir':parent_dir + 'pt_obs/app_orion/sims_real_red_data/winter_updated/upper_air/output/point_stat',
                                 'color':'r',
                                 'prefix':'point_stat',
                                 'subset':'ADPUPA'},
-                        'OSSE':{'dir':parent_dir + 'pt_obs/syn_data_sims/winter_updated/upper_air/output/point_stat',
+                        'OSSE':{'dir':parent_dir + 'pt_obs/app_orion/sims_syn_data/winter_updated/upper_air/output/point_stat',
                                 'color':'b',
                                 'prefix':'point_stat',
                                 'subset':'ADPUPA'},
-                        'OSSE (grid)':{'dir':parent_dir + 'grid_NR/winter/upper_air/output/GridStat',
-                                       'color':'gray',
-                                       'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
-                                       'subset':'NR'}},
-              'spring':{'real':{'dir':parent_dir + 'pt_obs/real_red_sims/spring/upper_air/output/point_stat',
+                        #'OSSE (grid)':{'dir':parent_dir + 'grid_NR/winter/upper_air/output/GridStat',
+                        #               'color':'gray',
+                        #               'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
+                        #               'subset':'NR'}
+                        },
+              'spring':{'real':{'dir':parent_dir + 'pt_obs/app_orion/sims_real_red_data/spring/upper_air/output/point_stat',
                                 'color':'r',
                                 'prefix':'point_stat',
                                 'subset':'ADPUPA'},
-                        'OSSE':{'dir':parent_dir + 'pt_obs/syn_data_sims/spring/upper_air/output/point_stat',
+                        'OSSE':{'dir':parent_dir + 'pt_obs/app_orion/sims_syn_data/spring/upper_air/output/point_stat',
                                 'color':'b',
                                 'prefix':'point_stat',
                                 'subset':'ADPUPA'},
-                        'OSSE (grid)':{'dir':parent_dir + 'grid_NR/spring/upper_air/output/GridStat',
-                                       'color':'gray',
-                                       'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
-                                       'subset':'NR'}}}
+                        #'OSSE (grid)':{'dir':parent_dir + 'grid_NR/spring/upper_air/output/GridStat',
+                        #               'color':'gray',
+                        #               'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
+                        #               'subset':'NR'}
+                        }}
 #for season in input_sims.keys():
 #    del input_sims[season]['OSSE (grid)']
 
@@ -65,25 +68,28 @@ ci_lvl = 0.95
 
 # Valid times (as datetime objects)
 valid_times = {'winter':[dt.datetime(2022, 2, 1, 12) + dt.timedelta(hours=i) for i in range(0, 156, 12)],
-               'spring':[dt.datetime(2022, 4, 30, 0) + dt.timedelta(hours=i) for i in range(0, 156, 12)]}
+               'spring':[dt.datetime(2022, 4, 30, 0) + dt.timedelta(hours=i) for i in range(0, 36, 12)]}
 
 # Forecast lead times (hrs)
 fcst_lead = 3
 
-save_fname = '../figs/VerifUAVprof.pdf'
+save_fname = '../figs/VerifUAVprof_spring_36hr.png'
 
 
 #---------------------------------------------------------------------------------------------------
 # Read Data and Create Plot
 #---------------------------------------------------------------------------------------------------
 
-fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(8, 6), sharey=True, sharex='col')
+fig, axes = plt.subplots(nrows=len(seasons), ncols=3, figsize=(8, 6), sharey=True, sharex='col')
 plt.subplots_adjust(left=0.11, bottom=0.09, right=0.99, top=0.92, wspace=0.1, hspace=0.1)
 
-for i, season in enumerate(['winter', 'spring']):
+for i, season in enumerate(seasons):
     for j, var in enumerate(['TMP', 'SPFH', 'UGRD_VGRD']):
         print('plotting %s %s' % (season, var))
-        ax = axes[i, j]
+        if len(seasons) > 1:
+            ax = axes[i, j]
+        else:
+            ax = axes[j]
         _, ax = mp.plot_ua_vprof(input_sims[season], valid_times[season], fcst_lead=fcst_lead, 
                                  line_type=plot_options[var]['line_type'],
                                  plot_var=var, 
@@ -105,7 +111,10 @@ for i, season in enumerate(['winter', 'spring']):
         #   ax.ticklabel_format(axis='x', style='sci', scilimits=(0,0)) 
 
 # Subplot labels
-letters = ['a', 'b', 'c', 'd', 'e', 'f']
+if len(seasons) == 1:
+    letters = ['a', 'b', 'c']
+else:
+    letters = ['a', 'b', 'c', 'd', 'e', 'f']
 for i, let in enumerate(letters):
     plt.gcf().text(0.12 + 0.305*(i%3), 0.885 - 0.432*(int(i/3)), '%s)' % let, fontsize=12,
                    fontweight='bold', backgroundcolor='white')
