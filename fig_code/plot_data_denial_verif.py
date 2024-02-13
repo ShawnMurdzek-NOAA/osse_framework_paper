@@ -26,7 +26,7 @@ met_dir = {'real':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app
 # Valid times
 valid_times = {'winter':[dt.datetime(2022, 2, 1, 9) + dt.timedelta(hours=i) for i in range(160)],
                'spring':[dt.datetime(2022, 4, 29, 21) + dt.timedelta(hours=i) for i in range(160)]}
-valid_times = {'spring':[dt.datetime(2022, 4, 29, 21) + dt.timedelta(hours=i) for i in range(36)]}
+valid_times = {'spring':[dt.datetime(2022, 4, 29, 21) + dt.timedelta(hours=i) for i in range(69)]}
 
 # Verifying observations
 verif_obs = {'sfc':'ADPSFC', 'upper_air':'ADPUPA'}
@@ -47,12 +47,13 @@ var_dict = {'TMP':{'line_type':'sl1l2', 'name':'temperature', 'stat':'RMSE', 'un
 
 # Confidence interval level
 ci_lvl = 0.95
+acct_lag_corr = True
 
 # Option to add annotations
 add_annot = False
 
 # Output file name (with %s placeholder for verification type)
-save_fname = '../figs/Candlestick%s_spring_36hr.png'
+save_fname = '../figs/Candlestick%s_spring_69hr.png'
 
 
 #---------------------------------------------------------------------------------------------------
@@ -86,7 +87,8 @@ for v in verif_obs.keys():
                             stats[v][dataset][s][exp][fl][varname]['all_data'] = (red_df[var_dict[varname]['stat']].values -
                                                                                   stats[v][dataset][s]['ctrl'][fl][varname]['all_data'])
                             stats[v][dataset][s][exp][fl][varname]['mean'] = np.mean(stats[v][dataset][s][exp][fl][varname]['all_data'])
-                            ci_out = mt.confidence_interval_mean(stats[v][dataset][s][exp][fl][varname]['all_data'], level=ci_lvl)
+                            ci_out = mt.confidence_interval_mean(stats[v][dataset][s][exp][fl][varname]['all_data'], level=ci_lvl,
+                                                                 acct_lag_corr=acct_lag_corr)
                             stats[v][dataset][s][exp][fl][varname]['ci_low'] = ci_out[0]
                             stats[v][dataset][s][exp][fl][varname]['ci_high'] = ci_out[1]
                 

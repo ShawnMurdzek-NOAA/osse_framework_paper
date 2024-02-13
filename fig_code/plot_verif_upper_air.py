@@ -65,15 +65,16 @@ plot_options = {'TMP':{'line_type':'sl1l2',
 toggle_pts = False
 ci = True
 ci_lvl = 0.95
+acct_lag_corr = True
 
 # Valid times (as datetime objects)
 valid_times = {'winter':[dt.datetime(2022, 2, 1, 12) + dt.timedelta(hours=i) for i in range(0, 156, 12)],
-               'spring':[dt.datetime(2022, 4, 30, 0) + dt.timedelta(hours=i) for i in range(0, 36, 12)]}
+               'spring':[dt.datetime(2022, 4, 30, 0) + dt.timedelta(hours=i) for i in range(0, 69, 12)]}
 
 # Forecast lead times (hrs)
 fcst_lead = 3
 
-save_fname = '../figs/VerifUAVprof_spring_36hr.png'
+save_fname = '../figs/VerifUAVprof_spring_69hr.png'
 
 
 #---------------------------------------------------------------------------------------------------
@@ -95,7 +96,8 @@ for i, season in enumerate(seasons):
                                  plot_var=var, 
                                  plot_stat=plot_options[var]['plot_stat'],
                                  toggle_pts=toggle_pts, verbose=False, ax=ax,
-                                 mean_legend=False, ci=ci, ci_lvl=ci_lvl)
+                                 mean_legend=False, ci=ci, ci_lvl=ci_lvl,
+                                 acct_lag_corr=acct_lag_corr)
         ax.set_title('')
         if (i != 0) or (j != 1):
             ax.get_legend().remove()
