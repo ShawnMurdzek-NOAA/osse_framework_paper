@@ -31,6 +31,10 @@ end_day = dt.datetime(2022, 2, 8, 0)
 obs_start_yr = 2004
 obs_end_yr = 2023
 
+# Stations to include
+surfrad_stations = []
+solrad_stations = []
+
 # Field to integrate
 NR_field = 'DSWRF_P0_L1_GLC0'
 surfrad_field = 'dw_solar'
@@ -38,6 +42,16 @@ solrad_field = 'dw_psp'
 
 # Time interval for integration (s)
 integrate_interval = 15*60
+
+
+#---------------------------------------------------------------------------------------------------
+# Read Data
+#---------------------------------------------------------------------------------------------------
+
+solrad_cols = []
+surfrad_cols = []
+
+
 
 
 """
