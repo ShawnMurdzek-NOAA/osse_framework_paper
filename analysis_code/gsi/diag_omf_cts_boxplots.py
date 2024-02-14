@@ -32,7 +32,6 @@ tmpl_osse_winter = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data_app_orion/wint
 tmpl_osse_spring = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data_app_orion/spring/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
 dates_winter = [dt.datetime(2022, 2, 1, 9) + dt.timedelta(hours=i) for i in range(159)]
 dates_spring = [dt.datetime(2022, 4, 29, 21) + dt.timedelta(hours=i) for i in range(159)]
-dates_spring = dates_spring[:36]
 
 path_tmpl = {}
 path_tmpl['real'] = [tmpl_real_spring % (d.strftime('%Y%m%d'), d.strftime('%H')) for d in dates_spring]
@@ -66,7 +65,7 @@ sim2 = 'osse'
 
 # Output directory and string to add to output file names
 out_dir = './'
-out_str = 'spring_36hr'
+out_str = 'spring'
 
 # Option to save some output statistics to a pickle file
 save_output = True

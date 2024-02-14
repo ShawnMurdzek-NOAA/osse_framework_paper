@@ -25,7 +25,7 @@ import pyDA_utils.gsi_fcts as gsi
 #---------------------------------------------------------------------------------------------------
 
 # Input pickle file
-pickle_fname = '../analysis_code/gsi/omf_diag_spring_36hr_assim.pkl'
+pickle_fname = '../analysis_code/gsi/omf_diag_spring_assim.pkl'
 
 # Variables to plot
 omf_vars = ['ps', 't', 'q', 'u', 'v', 'pw']
@@ -33,7 +33,7 @@ omf_labels = [r'$P_{sfc}$ (hPa)', r'$T$ (K)', r'$Q_{v}$ (kg kg$^{-1}$)', r'$U$ (
               r'$V$ (m s$^{-1}$)', 'PWAT (kg m$^{-2}$)']
 
 # Output directory and string to add to output file names
-out_file = '../figs/DAstats_36hr.png'
+out_file = '../figs/DAstats.pdf'
 
 
 #---------------------------------------------------------------------------------------------------
@@ -87,8 +87,9 @@ for i, (var, ylabel) in enumerate(zip(omf_vars, omf_labels)):
         ax_ct = axes[i, 0]
         frac_assim = (np.array([output_stats[var][key][ob]['n_assim'] for ob in ob_groups]) /
                       np.array([output_stats[var][data_names[0]][ob]['n_assim'] for ob in ob_groups]))
+        print(frac_assim)
         ax_ct.barh(ylocs+off, 100*frac_assim, height=bar_hgt, label=key, color=c)
-        ax_ct.set_xlim([90, 115])
+        ax_ct.set_xlim([90, 116])
 
         ax_omb = axes[i, 1]
         boxes = []
