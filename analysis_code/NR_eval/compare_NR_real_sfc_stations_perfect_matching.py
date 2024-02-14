@@ -335,8 +335,10 @@ if not pickle_avail:
     if save_rank:
         fake_station_rank = {}
         all_rank = {'ceil':np.zeros([len(station_ids), len(ceil_thres)])}
+        all_rank_nobs = {}
         for v in fake_varnames:
             all_rank[v] = np.zeros([ndays*len(station_ids), ntimes])
+            all_rank_nobs[v] = np.zeros([ndays*len(station_ids), ntimes])
         for i, ID in enumerate(station_ids):
             fake_station_rank[ID] = {}
             for v in fake_varnames:
@@ -351,6 +353,7 @@ if not pickle_avail:
                                                   list(real_stations[ID][v][k::ndays, l]))
                         combined_array = combined_array[~np.isnan(combined_array)]
                         fake_station_rank[ID][v][k, l] = np.where(np.argsort(combined_array) == 0)[0][0] / (combined_array.size - 1)
+                        all_rank_nobs[v][i*ndays+k, l] = combined_array.size - 1
                     all_rank[v][i*ndays+k, :] = fake_station_rank[ID][v][k, :]
             # Ceiling obs
             fake_station_rank[ID]['ceil'] = np.zeros(len(ceil_thres))
@@ -379,6 +382,7 @@ if not pickle_avail:
         if save_rank:
             all_data['fake_station_rank'] = fake_station_rank
             all_data['all_rank'] = all_rank
+            all_data['all_rank_nobs'] = all_rank_nobs
         with open(pickle_fname, 'wb') as handle:
             pickle.dump(all_data, handle)
 
