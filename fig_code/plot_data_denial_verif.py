@@ -11,8 +11,10 @@ shawn.s.murdzek@noaa.gov
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime as dt
+import os
+import pandas as pd
 
-import metplus_OSSE_scripts.utils.metplus_tools as mt
+import metplus_OSSE_scripts.plotting.metplus_tools as mt
 
 
 #---------------------------------------------------------------------------------------------------
@@ -20,13 +22,12 @@ import metplus_OSSE_scripts.utils.metplus_tools as mt
 #---------------------------------------------------------------------------------------------------
 
 # Directories containing METplus output
-met_dir = {'real':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app_orion/sims_real_red_data',
-           'OSSE':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app_orion/sims_syn_data'}
+met_dir = {'real':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app_orion/sims_real_red_data_OLD',
+           'OSSE':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app_orion/sims_syn_data_OLD'}
 
 # Valid times
 valid_times = {'winter':[dt.datetime(2022, 2, 1, 9) + dt.timedelta(hours=i) for i in range(160)],
                'spring':[dt.datetime(2022, 4, 29, 21) + dt.timedelta(hours=i) for i in range(160)]}
-valid_times = {'spring':[dt.datetime(2022, 4, 29, 21) + dt.timedelta(hours=i) for i in range(69)]}
 
 # Verifying observations
 verif_obs = {'sfc':'ADPSFC', 'upper_air':'ADPUPA'}
@@ -39,21 +40,22 @@ fcst_lead = [0, 1, 3, 6]
 
 # Variables and line_types
 var_dict = {'TMP':{'line_type':'sl1l2', 'name':'temperature', 'stat':'RMSE', 'units':'K', 
-                   'lim_upper_air':[-0.05, 0.3], 'lim_sfc':[-0.02, 1.4]}, 
+                   'lim_upper_air':[-0.05, 0.4], 'lim_sfc':[-0.02, 1.4]}, 
             'SPFH':{'line_type':'sl1l2', 'name':'specific humidity', 'stat':'RMSE', 'units':'kg kg$^{-1}$', 
-                    'lim_upper_air':[-0.5e-4, 2.65e-4], 'lim_sfc':[-0.2e-4, 4.5e-4]},
+                    'lim_upper_air':[-0.5e-4, 3.10e-4], 'lim_sfc':[-0.2e-4, 4.5e-4]},
             'UGRD_VGRD':{'line_type':'vl1l2', 'name':'wind', 'stat':'VECT_RMSE', 'units':'m s$^{-1}$', 
-                         'lim_upper_air':[-0.2, 2.25], 'lim_sfc':[-0.1, 0.95]}}
+                         'lim_upper_air':[-0.2, 2.4], 'lim_sfc':[-0.1, 0.95]}}
 
 # Confidence interval level
 ci_lvl = 0.95
-acct_lag_corr = True
+ci_opt = 'bootstrap'
+ci_kw = {'bootstrap_kw':{'n_resamples':10000}}
 
 # Option to add annotations
-add_annot = False
+add_annot = True
 
 # Output file name (with %s placeholder for verification type)
-save_fname = '../figs/Candlestick%s_spring_69hr.png'
+save_fname = '../figs/Candlestick%s.pdf'
 
 
 #---------------------------------------------------------------------------------------------------
@@ -70,14 +72,30 @@ for v in verif_obs.keys():
             stats[v][dataset][s] = {}
             for exp in experiments.keys():
                 stats[v][dataset][s][exp] = {}
+                data_dir = '{parent}/{s}{e}/{v}/{t}/output/point_stat'.format(parent=met_dir[dataset], 
+                                                                              s=s, e=experiments[exp], 
+                                                                              v=v, t=valid_times[s][0].strftime('%Y%m%d%H'))
                 for fl in fcst_lead:
                     stats[v][dataset][s][exp][fl] = {}
                     for varname in var_dict.keys():
                         stats[v][dataset][s][exp][fl][varname] = {}
-                        fnames = ['%s/%s%s/%s/output/point_stat/point_stat_%02d0000L_%sV_%s.txt' %
-                                  (met_dir[dataset], s, experiments[exp], v, fl, 
-                                   t.strftime('%Y%m%d_%H%M%S'), var_dict[varname]['line_type']) for t in valid_times[s]]
-                        tmp = mt.read_ascii(fnames, verbose=False)
+
+                        fnames = ['%s/point_stat_%02d0000L_%sV_%s.txt' %
+                                  (data_dir, fl, t.strftime('%Y%m%d_%H%M%S'), var_dict[varname]['line_type']) 
+                                  for t in valid_times[s]]
+                        if v == 'sfc':
+                            tmp = mt.read_ascii(fnames, verbose=False)
+                        elif v == 'upper_air':
+                            # Average in vertical first
+                            tmp_df_list = []
+                            for f in fnames:
+                                if os.path.isfile(f):
+                                    df = mt.read_ascii([f], verbose=False)
+                                    tmp_df_list.append(mt.compute_stats_vert_avg(df, line_type=var_dict[varname]['line_type'])) 
+                                else:
+                                    continue
+                            tmp = pd.concat(tmp_df_list)
+
                         red_df = tmp.loc[(tmp['FCST_VAR'] == varname) &
                                          (tmp['OBTYPE'] == verif_obs[v])].copy()
                         red_df = mt.compute_stats(red_df, line_type=var_dict[varname]['line_type'])
@@ -86,9 +104,10 @@ for v in verif_obs.keys():
                         else:
                             stats[v][dataset][s][exp][fl][varname]['all_data'] = (red_df[var_dict[varname]['stat']].values -
                                                                                   stats[v][dataset][s]['ctrl'][fl][varname]['all_data'])
+                            # Take temporal average
                             stats[v][dataset][s][exp][fl][varname]['mean'] = np.mean(stats[v][dataset][s][exp][fl][varname]['all_data'])
                             ci_out = mt.confidence_interval_mean(stats[v][dataset][s][exp][fl][varname]['all_data'], level=ci_lvl,
-                                                                 acct_lag_corr=acct_lag_corr)
+                                                                 option=ci_opt, ci_kw=ci_kw)
                             stats[v][dataset][s][exp][fl][varname]['ci_low'] = ci_out[0]
                             stats[v][dataset][s][exp][fl][varname]['ci_high'] = ci_out[1]
                 
@@ -106,7 +125,7 @@ for v in verif_obs.keys():
         for k, varname in enumerate(var_dict.keys()):
             ax = axes[j, k]
             for off1, s in zip([0, 4], valid_times.keys()):
-                for off2, c, exp in zip([1, 2, 3], ['b', 'r', 'gray'], list(experiments.keys())[1:]):
+                for off2, c, exp in zip([1, 2, 3], ['c', 'r', 'gray'], list(experiments.keys())[1:]):
                     for off3, fl in zip([-0.45 + 0.5*bar_hgt + bar_hgt*n for n in range(len(fcst_lead))], fcst_lead): 
                         ax.barh(off1+off2+off3, 
                                 stats[v][dataset][s][exp][fl][varname]['mean'],

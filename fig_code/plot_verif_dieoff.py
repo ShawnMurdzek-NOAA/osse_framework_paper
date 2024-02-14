@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import datetime as dt
 
-import metplus_OSSE_scripts.utils.metplus_plots as mp
-import metplus_OSSE_scripts.utils.metplus_tools as mt
+import metplus_OSSE_scripts.plotting.metplus_plots as mp
+import metplus_OSSE_scripts.plotting.metplus_tools as mt
 
 
 #---------------------------------------------------------------------------------------------------
@@ -70,7 +70,8 @@ plot_options = {'TMP':{'line_type':'sl1l2',
 toggle_pts = False
 ci = True
 ci_lvl = 0.95
-acct_lag_corr = True
+ci_opt = 't_dist'
+ci_kw = {'acct_lag_corr': True}
 
 # Valid times (as datetime objects)
 valid_times = {'winter':[dt.datetime(2022, 2, 1, 10) + dt.timedelta(hours=i) for i in range(158)],
@@ -103,7 +104,7 @@ for i, season in enumerate(seasons):
                                    plot_stat=plot_options[var]['plot_stat'],
                                    toggle_pts=toggle_pts, verbose=False, ax=ax,
                                    mean_legend=False, ci=ci, ci_lvl=ci_lvl,
-                                   acct_lag_corr=acct_lag_corr)
+                                   ci_opt=ci_opt, ci_kw=ci_kw)
         ax.set_title('')
         if (i != 0) or (j != 0):
             ax.get_legend().remove()
