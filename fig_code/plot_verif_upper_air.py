@@ -22,32 +22,32 @@ import metplus_OSSE_scripts.plotting.metplus_tools as mt
 
 # Input file information
 parent_dir = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_'
-seasons = ['spring']
-input_sims = {'winter':{'real':{'dir':parent_dir + 'pt_obs/app_orion/sims_real_red_data/winter_updated/upper_air/output/point_stat',
+seasons = ['winter', 'spring']
+input_sims = {'winter':{'real':{'dir':parent_dir + 'pt_obs/app_orion/sims_real_red_data/winter/upper_air/2022020109/output/point_stat',
                                 'color':'r',
                                 'prefix':'point_stat',
                                 'subset':'ADPUPA'},
-                        'OSSE':{'dir':parent_dir + 'pt_obs/app_orion/sims_syn_data/winter_updated/upper_air/output/point_stat',
+                        'OSSE':{'dir':parent_dir + 'pt_obs/app_orion/sims_syn_data/winter_2iter/upper_air/2022020109/output/point_stat',
                                 'color':'b',
                                 'prefix':'point_stat',
                                 'subset':'ADPUPA'},
-                        #'OSSE (grid)':{'dir':parent_dir + 'grid_NR/winter/upper_air/output/GridStat',
-                        #               'color':'gray',
-                        #               'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
-                        #               'subset':'NR'}
+                        'OSSE (grid)':{'dir':parent_dir + 'grid_NR/app_orion/winter_2iter/upper_air/output/GridStat',
+                                       'color':'gray',
+                                       'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
+                                       'subset':'NR'}
                         },
-              'spring':{'real':{'dir':parent_dir + 'pt_obs/app_orion/sims_real_red_data/spring/upper_air/output/point_stat',
+              'spring':{'real':{'dir':parent_dir + 'pt_obs/app_orion/sims_real_red_data/spring/upper_air/2022042921/output/point_stat',
                                 'color':'r',
                                 'prefix':'point_stat',
                                 'subset':'ADPUPA'},
-                        'OSSE':{'dir':parent_dir + 'pt_obs/app_orion/sims_syn_data/spring/upper_air/output/point_stat',
+                        'OSSE':{'dir':parent_dir + 'pt_obs/app_orion/sims_syn_data/spring_2iter/upper_air/2022042921/output/point_stat',
                                 'color':'b',
                                 'prefix':'point_stat',
                                 'subset':'ADPUPA'},
-                        #'OSSE (grid)':{'dir':parent_dir + 'grid_NR/spring/upper_air/output/GridStat',
-                        #               'color':'gray',
-                        #               'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
-                        #               'subset':'NR'}
+                        'OSSE (grid)':{'dir':parent_dir + 'grid_NR/app_orion/spring_2iter/upper_air/output/GridStat',
+                                       'color':'gray',
+                                       'prefix':'grid_stat_FV3_TMP_vs_NR_TMP',
+                                       'subset':'NR'}
                         }}
 #for season in input_sims.keys():
 #    del input_sims[season]['OSSE (grid)']
@@ -65,17 +65,17 @@ plot_options = {'TMP':{'line_type':'sl1l2',
 toggle_pts = False
 ci = True
 ci_lvl = 0.95
-ci_opt = 't_dist'
-ci_kw = {'acct_lag_corr': True}
+ci_opt = 'bootstrap'
+ci_kw = {'bootstrap_kw':{'n_resamples':10000}}
 
 # Valid times (as datetime objects)
 valid_times = {'winter':[dt.datetime(2022, 2, 1, 12) + dt.timedelta(hours=i) for i in range(0, 156, 12)],
-               'spring':[dt.datetime(2022, 4, 30, 0) + dt.timedelta(hours=i) for i in range(0, 69, 12)]}
+               'spring':[dt.datetime(2022, 4, 30, 0) + dt.timedelta(hours=i) for i in range(0, 156, 12)]}
 
 # Forecast lead times (hrs)
 fcst_lead = 3
 
-save_fname = '../figs/VerifUAVprof_spring_69hr.png'
+save_fname = '../figs/VerifUAVprof.pdf'
 
 
 #---------------------------------------------------------------------------------------------------

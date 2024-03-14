@@ -25,7 +25,7 @@ import pyDA_utils.gsi_fcts as gsi
 #---------------------------------------------------------------------------------------------------
 
 # Input pickle file
-pickle_fname = '../analysis_code/gsi/omf_diag_spring_assim.pkl'
+pickle_fname = '../analysis_code/gsi/omf_diag_spring_2iter_assim.pkl'
 
 # Variables to plot
 omf_vars = ['ps', 't', 'q', 'u', 'v', 'pw']
@@ -87,18 +87,23 @@ for i, (var, ylabel) in enumerate(zip(omf_vars, omf_labels)):
         ax_ct = axes[i, 0]
         frac_assim = (np.array([output_stats[var][key][ob]['n_assim'] for ob in ob_groups]) /
                       np.array([output_stats[var][data_names[0]][ob]['n_assim'] for ob in ob_groups]))
-        print(frac_assim)
         ax_ct.barh(ylocs+off, 100*frac_assim, height=bar_hgt, label=key, color=c)
         ax_ct.set_xlim([90, 116])
 
         ax_omb = axes[i, 1]
         boxes = []
-        for ob in ob_groups:
+        for k, ob in enumerate(ob_groups):
             boxes.append({'med': output_stats[var][key][ob]['omb_p50'],
                           'q1': output_stats[var][key][ob]['omb_p25'],
                           'q3': output_stats[var][key][ob]['omb_p75'],
                           'whislo': output_stats[var][key][ob]['omb_whislo'],
                           'whishi': output_stats[var][key][ob]['omb_whishi']})
+        
+            print()
+            print('Variable = {var}, dataset = {d}, ob = {o}'.format(var=var, d=key, o=ob))
+            print('fraction assimilated = {f}'.format(f=frac_assim[k]))
+            print('variance = {v}'.format(v=output_stats[var][key][ob]['omb_variance']))
+
         ax_omb.bxp(boxes, positions=(ylocs+off), widths=bar_hgt, vert=False, patch_artist=True,
                    boxprops={'facecolor':c}, showfliers=False)
 

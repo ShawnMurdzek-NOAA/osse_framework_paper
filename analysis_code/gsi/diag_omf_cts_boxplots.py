@@ -29,13 +29,16 @@ import pyDA_utils.gsi_fcts as gsi
 tmpl_real_winter = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/real_red_data_app_orion/winter/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
 tmpl_real_spring = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/real_red_data_app_orion/spring/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
 tmpl_osse_winter = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data_app_orion/winter/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
+tmpl_osse_winter_2iter = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data_app_orion/winter_2iter/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
+tmpl_osse_winter_perf = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data_app_orion/winter_tune_oberr_noGVF/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
 tmpl_osse_spring = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data_app_orion/spring/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
+tmpl_osse_spring_2iter = '/work2/noaa/wrfruc/murdzek/RRFS_OSSE/syn_data_app_orion/spring_2iter/NCO_dirs/ptmp/prod/rrfs.%s/%s/'
 dates_winter = [dt.datetime(2022, 2, 1, 9) + dt.timedelta(hours=i) for i in range(159)]
 dates_spring = [dt.datetime(2022, 4, 29, 21) + dt.timedelta(hours=i) for i in range(159)]
 
 path_tmpl = {}
 path_tmpl['real'] = [tmpl_real_spring % (d.strftime('%Y%m%d'), d.strftime('%H')) for d in dates_spring]
-path_tmpl['OSSE'] = [tmpl_osse_spring % (d.strftime('%Y%m%d'), d.strftime('%H')) for d in dates_spring]
+path_tmpl['OSSE'] = [tmpl_osse_spring_2iter % (d.strftime('%Y%m%d'), d.strftime('%H')) for d in dates_spring]
 dates = dates_spring
 
 # Variables to plot
@@ -65,7 +68,7 @@ sim2 = 'osse'
 
 # Output directory and string to add to output file names
 out_dir = './'
-out_str = 'spring'
+out_str = 'spring_2iter'
 
 # Option to save some output statistics to a pickle file
 save_output = True
@@ -218,6 +221,7 @@ for var in omf_vars:
                 if output_stats[var][key][ob]['n_assim'] > 0:
                     for omf in ['omb', 'oma']:
                         output_stats[var][key][ob]['%s_mean' % omf] = np.mean(plot_data[key][omf][k])
+                        output_stats[var][key][ob]['%s_variance' % omf] = np.var(plot_data[key][omf][k])
                         for pct in [0, 5, 25, 50, 75, 95, 100]:
                             output_stats[var][key][ob]['%s_p%d' % (omf, pct)] = np.percentile(plot_data[key][omf][k], pct)
                         iqr = output_stats[var][key][ob]['%s_p75' % omf] - output_stats[var][key][ob]['%s_p25' % omf]

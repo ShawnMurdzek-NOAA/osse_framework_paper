@@ -22,8 +22,8 @@ import metplus_OSSE_scripts.plotting.metplus_tools as mt
 #---------------------------------------------------------------------------------------------------
 
 # Directories containing METplus output
-met_dir = {'real':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app_orion/sims_real_red_data_OLD',
-           'OSSE':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app_orion/sims_syn_data_OLD'}
+met_dir = {'real':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app_orion/sims_real_red_data',
+           'OSSE':'/work2/noaa/wrfruc/murdzek/RRFS_OSSE/metplus_verif_pt_obs/app_orion/sims_syn_data'}
 
 # Valid times
 valid_times = {'winter':[dt.datetime(2022, 2, 1, 9) + dt.timedelta(hours=i) for i in range(160)],
@@ -72,9 +72,14 @@ for v in verif_obs.keys():
             stats[v][dataset][s] = {}
             for exp in experiments.keys():
                 stats[v][dataset][s][exp] = {}
-                data_dir = '{parent}/{s}{e}/{v}/{t}/output/point_stat'.format(parent=met_dir[dataset], 
-                                                                              s=s, e=experiments[exp], 
-                                                                              v=v, t=valid_times[s][0].strftime('%Y%m%d%H'))
+                if dataset == 'OSSE':
+                    data_dir = '{parent}/{s}_2iter{e}/{v}/{t}/output/point_stat'.format(parent=met_dir[dataset], 
+                                                                                        s=s, e=experiments[exp], 
+                                                                                        v=v, t=valid_times[s][0].strftime('%Y%m%d%H'))
+                elif dataset == 'real':
+                    data_dir = '{parent}/{s}{e}/{v}/{t}/output/point_stat'.format(parent=met_dir[dataset], 
+                                                                                  s=s, e=experiments[exp], 
+                                                                                  v=v, t=valid_times[s][0].strftime('%Y%m%d%H'))
                 for fl in fcst_lead:
                     stats[v][dataset][s][exp][fl] = {}
                     for varname in var_dict.keys():
