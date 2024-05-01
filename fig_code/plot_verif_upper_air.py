@@ -55,13 +55,19 @@ input_sims = {'winter':{'real':{'dir':parent_dir + 'pt_obs/app_orion/sims_real_r
 # Other plotting options
 plot_options = {'TMP':{'line_type':'sl1l2',
                        'plot_stat':'RMSE',
-                       'xlabel':'T RMSE (K)'},
+                       'xlabel':'T RMSE (K)',
+                       'plot_param':{'plot_var':'TMP',
+                                     'ob_subset':'ADPUPA'}},
                 'SPFH':{'line_type':'sl1l2',
                         'plot_stat':'RMSE',
-                        'xlabel':'Q RMSE (kg kg$^{-1}$)'},
+                        'xlabel':'Q RMSE (kg kg$^{-1}$)',
+                        'plot_param':{'plot_var':'SPFH',
+                                      'ob_subset':'ADPUPA'}},
                 'UGRD_VGRD':{'line_type':'vl1l2',
                              'plot_stat':'VECT_RMSE',
-                             'xlabel':'Wind RMSE (m s$^{-1}$)'}}
+                             'xlabel':'Wind RMSE (m s$^{-1}$)',
+                             'plot_param':{'plot_var':'UGRD_VGRD',
+                                           'ob_subset':'ADPUPA'}}}
 toggle_pts = False
 ci = True
 ci_lvl = 0.95
@@ -94,7 +100,7 @@ for i, season in enumerate(seasons):
             ax = axes[j]
         _, ax = mp.plot_ua_vprof(input_sims[season], valid_times[season], fcst_lead=fcst_lead, 
                                  line_type=plot_options[var]['line_type'],
-                                 plot_var=var, 
+                                 plot_param=plot_options[var]['plot_param'], 
                                  plot_stat=plot_options[var]['plot_stat'],
                                  toggle_pts=toggle_pts, verbose=False, ax=ax,
                                  mean_legend=False, ci=ci, ci_lvl=ci_lvl,

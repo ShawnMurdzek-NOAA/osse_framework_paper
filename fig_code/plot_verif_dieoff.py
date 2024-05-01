@@ -56,17 +56,23 @@ plot_stat = 'RMSE'
 
 # Other plotting options
 plot_options = {'TMP':{'line_type':'sl1l2',
-                       'plot_lvl':'Z2',
                        'plot_stat':'RMSE',
-                       'ylabel':'T RMSE (K)'},
+                       'ylabel':'T RMSE (K)',
+                       'plot_param':{'plot_lvl':'Z2',
+                                     'plot_var':'TMP',
+                                     'ob_subset':'ADPSFC'}},
                 'SPFH':{'line_type':'sl1l2',
-                        'plot_lvl':'Z2',
                         'plot_stat':'RMSE',
-                        'ylabel':'Q RMSE (kg kg$^{-1}$)'},
+                        'ylabel':'Q RMSE (kg kg$^{-1}$)',
+                        'plot_param':{'plot_lvl':'Z2',
+                                      'plot_var':'SPFH',
+                                      'ob_subset':'ADPSFC'}},
                 'UGRD_VGRD':{'line_type':'vl1l2',
-                             'plot_lvl':'Z10',
                              'plot_stat':'VECT_RMSE',
-                             'ylabel':'Wind RMSE (m s$^{-1}$)'}}
+                             'ylabel':'Wind RMSE (m s$^{-1}$)',
+                             'plot_param':{'plot_lvl':'Z10',
+                                           'plot_var':'UGRD_VGRD',
+                                           'ob_subset':'ADPSFC'}}}
 toggle_pts = False
 ci = True
 ci_lvl = 0.95
@@ -99,8 +105,7 @@ for i, season in enumerate(seasons):
             ax = axes[j]
         _, ax = mp.plot_sfc_dieoff(input_sims[season], valid_times[season], fcst_lead=fcst_lead, 
                                    line_type=plot_options[var]['line_type'],
-                                   plot_var=var, 
-                                   plot_lvl=plot_options[var]['plot_lvl'], 
+                                   plot_param=plot_options[var]['plot_param'], 
                                    plot_stat=plot_options[var]['plot_stat'],
                                    toggle_pts=toggle_pts, verbose=False, ax=ax,
                                    mean_legend=False, ci=ci, ci_lvl=ci_lvl,
