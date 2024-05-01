@@ -56,18 +56,18 @@ input_sims = {'winter':{'real':{'dir':parent_dir + 'pt_obs/app_orion/sims_real_r
 plot_options = {'TMP':{'line_type':'sl1l2',
                        'plot_stat':'RMSE',
                        'xlabel':'T RMSE (K)',
-                       'plot_param':{'plot_var':'TMP',
-                                     'ob_subset':'ADPUPA'}},
+                       'plot_param':{'FCST_VAR':'TMP',
+                                     'OBTYPE':'ADPUPA'}},
                 'SPFH':{'line_type':'sl1l2',
                         'plot_stat':'RMSE',
                         'xlabel':'Q RMSE (kg kg$^{-1}$)',
-                        'plot_param':{'plot_var':'SPFH',
-                                      'ob_subset':'ADPUPA'}},
+                        'plot_param':{'FCST_VAR':'SPFH',
+                                      'OBTYPE':'ADPUPA'}},
                 'UGRD_VGRD':{'line_type':'vl1l2',
                              'plot_stat':'VECT_RMSE',
                              'xlabel':'Wind RMSE (m s$^{-1}$)',
-                             'plot_param':{'plot_var':'UGRD_VGRD',
-                                           'ob_subset':'ADPUPA'}}}
+                             'plot_param':{'FCST_VAR':'UGRD_VGRD',
+                                           'OBTYPE':'ADPUPA'}}}
 toggle_pts = False
 ci = True
 ci_lvl = 0.95

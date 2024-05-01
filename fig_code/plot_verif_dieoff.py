@@ -58,21 +58,21 @@ plot_stat = 'RMSE'
 plot_options = {'TMP':{'line_type':'sl1l2',
                        'plot_stat':'RMSE',
                        'ylabel':'T RMSE (K)',
-                       'plot_param':{'plot_lvl':'Z2',
-                                     'plot_var':'TMP',
-                                     'ob_subset':'ADPSFC'}},
+                       'plot_param':{'FCST_LEV':'Z2',
+                                     'FCST_VAR':'TMP',
+                                     'OBTYPE':'ADPSFC'}},
                 'SPFH':{'line_type':'sl1l2',
                         'plot_stat':'RMSE',
                         'ylabel':'Q RMSE (kg kg$^{-1}$)',
-                        'plot_param':{'plot_lvl':'Z2',
-                                      'plot_var':'SPFH',
-                                      'ob_subset':'ADPSFC'}},
+                        'plot_param':{'FCST_LEV':'Z2',
+                                      'FCST_VAR':'SPFH',
+                                      'OBTYPE':'ADPSFC'}},
                 'UGRD_VGRD':{'line_type':'vl1l2',
                              'plot_stat':'VECT_RMSE',
                              'ylabel':'Wind RMSE (m s$^{-1}$)',
-                             'plot_param':{'plot_lvl':'Z10',
-                                           'plot_var':'UGRD_VGRD',
-                                           'ob_subset':'ADPSFC'}}}
+                             'plot_param':{'FCST_LEV':'Z10',
+                                           'FCST_VAR':'UGRD_VGRD',
+                                           'OBTYPE':'ADPSFC'}}}
 toggle_pts = False
 ci = True
 ci_lvl = 0.95
