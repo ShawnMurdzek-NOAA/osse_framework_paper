@@ -38,13 +38,27 @@ experiments = {'ctrl':'', 'no aircraft':'_no_aircft', 'no raob':'_no_raob', 'no 
 # Forecast lengths
 fcst_lead = [0, 1, 3, 6]
 
+# Vertical layer for averaging upper-air verification (hPa)
+vert_min = 700
+vert_max = 1000
+
 # Variables and line_types
+
+# Full upper-air verif (1000 - 100 hPa)
+#var_dict = {'TMP':{'line_type':'sl1l2', 'name':'temperature', 'stat':'RMSE', 'units':'K', 
+#                   'lim_upper_air':[-0.05, 0.4], 'lim_sfc':[-0.02, 1.4]}, 
+#            'SPFH':{'line_type':'sl1l2', 'name':'specific humidity', 'stat':'RMSE', 'units':'kg kg$^{-1}$', 
+#                    'lim_upper_air':[-0.5e-4, 3.10e-4], 'lim_sfc':[-0.2e-4, 4.5e-4]},
+#            'UGRD_VGRD':{'line_type':'vl1l2', 'name':'wind', 'stat':'VECT_RMSE', 'units':'m s$^{-1}$', 
+#                         'lim_upper_air':[-0.2, 2.4], 'lim_sfc':[-0.1, 0.95]}}
+
+# Lower troposphere verif (1000 - 700 hPa)
 var_dict = {'TMP':{'line_type':'sl1l2', 'name':'temperature', 'stat':'RMSE', 'units':'K', 
-                   'lim_upper_air':[-0.05, 0.4], 'lim_sfc':[-0.02, 1.4]}, 
+                   'lim_upper_air':[-0.08, 0.37], 'lim_sfc':[-0.02, 1.4]}, 
             'SPFH':{'line_type':'sl1l2', 'name':'specific humidity', 'stat':'RMSE', 'units':'kg kg$^{-1}$', 
-                    'lim_upper_air':[-0.5e-4, 3.10e-4], 'lim_sfc':[-0.2e-4, 4.5e-4]},
+                    'lim_upper_air':[-0.8e-4, 3.90e-4], 'lim_sfc':[-0.2e-4, 4.5e-4]},
             'UGRD_VGRD':{'line_type':'vl1l2', 'name':'wind', 'stat':'VECT_RMSE', 'units':'m s$^{-1}$', 
-                         'lim_upper_air':[-0.2, 2.4], 'lim_sfc':[-0.1, 0.95]}}
+                         'lim_upper_air':[-0.6, 1.5], 'lim_sfc':[-0.1, 0.95]}}
 
 # Confidence interval level
 ci_lvl = 0.95
@@ -55,7 +69,7 @@ ci_kw = {'bootstrap_kw':{'n_resamples':10000}}
 add_annot = True
 
 # Output file name (with %s placeholder for verification type)
-save_fname = '../figs/Candlestick%s.pdf'
+save_fname = '../figs/CandlestickLowerAtm%s.pdf'
 
 
 #---------------------------------------------------------------------------------------------------
@@ -96,7 +110,8 @@ for v in verif_obs.keys():
                             for f in fnames:
                                 if os.path.isfile(f):
                                     df = mt.read_ascii([f], verbose=False)
-                                    tmp_df_list.append(mt.compute_stats_vert_avg(df, line_type=var_dict[varname]['line_type'])) 
+                                    tmp_df_list.append(mt.compute_stats_vert_avg(df, vmin=vert_min, vmax=vert_max, 
+                                                                                 line_type=var_dict[varname]['line_type'])) 
                                 else:
                                     continue
                             tmp = pd.concat(tmp_df_list)
