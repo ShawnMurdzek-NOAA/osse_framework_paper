@@ -32,7 +32,7 @@ import seaborn as sns
 
 # Input pickle files
 parent_dir = '../analysis_code/NR_eval'
-pickle_winter_fname = parent_dir + '/sfc_station_compare_winter_real_2021.pkl'
+pickle_winter_fname = parent_dir + '/sfc_station_compare_winter.pkl'
 pickle_spring_fname = parent_dir + '/sfc_station_compare_spring.pkl'
 
 # Parameters for real obs
@@ -47,8 +47,7 @@ years = np.arange(1993, 2023)
 analysis_times = [dt.timedelta(hours=i) for i in range(24)]
 
 # Output file name (include %s placeholder for season)
-#out_fname = '../figs/SfcStationComparisonRank%s.pdf'
-out_fname = '../figs/PNGs/SfcStationComparisonRank%s_real_winter_2021.png'
+out_fname = '../figs/SfcStationComparisonRank%s.pdf'
 
 
 #---------------------------------------------------------------------------------------------------
