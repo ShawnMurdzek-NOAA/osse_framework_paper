@@ -1,6 +1,13 @@
 """
 Compare Real and Synthetic Surface Station Observations for 2022
 
+This script uses output from ../analysis_code/NR_eval/compare_NR_real_sfc_stations_perfect_matching.py,
+but only run for a single year of real-data obs. An example pickle file can be found here:
+../analysis_code/NR_eval/sfc_station_compare_winter_2022.pkl
+
+Creates scatterplots and histograms (of differences or raw values) of pairwise comparisons between
+real and simulated surface station observations
+
 shawn.s.murdzek@noaa.gov
 """
 
