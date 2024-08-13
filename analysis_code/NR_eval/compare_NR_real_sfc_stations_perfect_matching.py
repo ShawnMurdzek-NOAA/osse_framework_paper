@@ -33,24 +33,28 @@ import pyDA_utils.bufr as bufr
 #---------------------------------------------------------------------------------------------------
 
 # Parameters for real obs
-real_obs_dir = '/work2/noaa/wrfruc/murdzek/real_obs/sfc_stations/spring'
+real_obs_dir = '/work2/noaa/wrfruc/murdzek/real_obs/sfc_stations/winter'
 with open('station_list.txt', 'r') as fptr:
     station_ids = fptr.readlines()
     for i in range(len(station_ids)):
         station_ids[i] = station_ids[i].strip()
-#years = np.arange(1993, 2023)
-years = np.array([2022])
-startdate = '04290000'
-enddate = '05070000'
-#startdate = '02010000'
-#enddate = '02080000'
+years = np.arange(1993, 2023)
+#years = np.array([2022])
+#startdate = '04290000'
+#enddate = '05070000'
+startdate = '02010000'
+enddate = '02080000'
 
 # Parameters for fake obs
 # analysis_times are dt.timedelta objects relative to 0000
-fake_obs_dir = '/work2/noaa/wrfruc/murdzek/nature_run_spring/obs/eval_sfc_station/perfect_csv/'
-analysis_days = [dt.datetime(2022, 4, 29) + dt.timedelta(days=i) for i in range(8)]
-#analysis_days = [dt.datetime(2022, 2, 1) + dt.timedelta(days=i) for i in range(7)]
+fake_obs_dir = '/work2/noaa/wrfruc/murdzek/nature_run_winter/obs/eval_sfc_station/perfect_csv/'
+#analysis_days = [dt.datetime(2022, 4, 29) + dt.timedelta(days=i) for i in range(8)]
+analysis_days = [dt.datetime(2022, 2, 1) + dt.timedelta(days=i) for i in range(7)]
 analysis_times = [dt.timedelta(hours=i) for i in range(24)]
+
+# Option to swap fake obs with real obs from a certain year
+swap_obs = False
+swap_year = 2021
 
 # Maximum time allowed between analysis_times and either the real or fake ob (sec)
 max_time_allowed = 450.
@@ -84,7 +88,7 @@ ceil_thres = [0.1524, 0.3048, 0.9144]
 # If use_pickle is True, then the script will attempt to read the pickle file specified. If the file
 # is not found, that file will be written to.
 use_pickle = True
-pickle_fname = './sfc_station_compare_spring_2022.pkl'
+pickle_fname = './sfc_station_compare_winter.pkl'
 
 # Output file name (include %s placeholder for station ID)
 out_fname = '%s_sfc_station_compare_perfect.png'
@@ -270,6 +274,19 @@ if not pickle_avail:
         fake_stations[ID]['frac_ceil_thres'] = np.zeros(len(ceil_thres))
         for l, thres in enumerate(ceil_thres):
             fake_stations[ID]['frac_ceil_thres'][l] = np.nansum(fake_stations[ID]['ceil'] <= thres) / tot_obs
+
+    # Swap fake obs with real obs if desired
+    if swap_obs:
+        iyr = np.where(years == swap_year)[0][0]
+        istart = iyr * ndays
+        iend = istart + ndays 
+        for ID in station_ids:
+            for v in fake_varnames:
+                fake_stations[ID][v] = real_stations[ID][v][istart:iend]
+            fake_stations[ID]['ceil'] = real_stations[ID]['ceil'][iyr, :]
+            fake_stations[ID]['frac_ceil'] = real_stations[ID]['frac_ceil'][iyr]
+            fake_stations[ID]['frac_ceil_thres'] = real_stations[ID]['frac_ceil_thres'][:, iyr]
+            fake_stations[ID]['bin_ceil'] = np.float64(~np.isnan(fake_stations[ID]['ceil']))
 
     # Compute z-scores for fake stations
     # For modified z-scores explanation, see here: 

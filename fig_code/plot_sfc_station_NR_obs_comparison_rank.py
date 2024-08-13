@@ -32,7 +32,7 @@ import seaborn as sns
 
 # Input pickle files
 parent_dir = '../analysis_code/NR_eval'
-pickle_winter_fname = parent_dir + '/sfc_station_compare_winter.pkl'
+pickle_winter_fname = parent_dir + '/sfc_station_compare_winter_real_2021.pkl'
 pickle_spring_fname = parent_dir + '/sfc_station_compare_spring.pkl'
 
 # Parameters for real obs
@@ -47,7 +47,8 @@ years = np.arange(1993, 2023)
 analysis_times = [dt.timedelta(hours=i) for i in range(24)]
 
 # Output file name (include %s placeholder for season)
-out_fname = '../figs/SfcStationComparisonRank%s.pdf'
+#out_fname = '../figs/SfcStationComparisonRank%s.pdf'
+out_fname = '../figs/PNGs/SfcStationComparisonRank%s_real_winter_2021.png'
 
 
 #---------------------------------------------------------------------------------------------------
@@ -108,17 +109,17 @@ for season in ['Winter', 'Spring']:
 
         # Original bins. These bins result very few values in the 0.5 bin owing to a mathematical
         # artifact
-        bin_ctr = np.linspace(0, 1, 31)
-        bin_hwidth = 0.5 * (bin_ctr[1] - bin_ctr[0])
-        bins = np.array(list(bin_ctr - bin_hwidth) + [bin_ctr[-1] + bin_hwidth])
-        vmax = 55
+        #bin_ctr = np.linspace(0, 1, 31)
+        #bin_hwidth = 0.5 * (bin_ctr[1] - bin_ctr[0])
+        #bins = np.array(list(bin_ctr - bin_hwidth) + [bin_ctr[-1] + bin_hwidth])
+        #vmax = 55
 
         # Alternative bins. These bins are more uniform except for the first and last bin, which
         # have fewer values than the other bins b/c these bins are smaller
-        #bins = np.arange(-0.098888889, 1.2, 0.108888888889)
-        #bin_hwidth = 0.5 * (bins[1] - bins[0])
-        #bin_ctr = bins[:-1] + bin_hwidth
-        #vmax = 140
+        bins = np.arange(-0.098888889, 1.2, 0.108888888889)
+        bin_hwidth = 0.5 * (bins[1] - bins[0])
+        bin_ctr = bins[:-1] + bin_hwidth
+        vmax = 140
 
         nhist = all_data[season]['all_rank'][v].shape[-1]
         zscore_hist = np.zeros([nhist, len(bins) - 1])
