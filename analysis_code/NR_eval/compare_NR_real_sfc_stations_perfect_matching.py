@@ -33,22 +33,23 @@ import pyDA_utils.bufr as bufr
 #---------------------------------------------------------------------------------------------------
 
 # Parameters for real obs
-real_obs_dir = '/work2/noaa/wrfruc/murdzek/real_obs/sfc_stations/winter'
+real_obs_dir = '/work2/noaa/wrfruc/murdzek/real_obs/sfc_stations/spring'
 with open('station_list.txt', 'r') as fptr:
     station_ids = fptr.readlines()
     for i in range(len(station_ids)):
         station_ids[i] = station_ids[i].strip()
-years = np.arange(1993, 2023)
-#startdate = '04290000'
-#enddate = '05070000'
-startdate = '02010000'
-enddate = '02080000'
+#years = np.arange(1993, 2023)
+years = np.array([2022])
+startdate = '04290000'
+enddate = '05070000'
+#startdate = '02010000'
+#enddate = '02080000'
 
 # Parameters for fake obs
 # analysis_times are dt.timedelta objects relative to 0000
-fake_obs_dir = '/work2/noaa/wrfruc/murdzek/nature_run_winter/obs/eval_sfc_station/perfect_csv/'
-#analysis_days = [dt.datetime(2022, 4, 29) + dt.timedelta(days=i) for i in range(8)]
-analysis_days = [dt.datetime(2022, 2, 1) + dt.timedelta(days=i) for i in range(7)]
+fake_obs_dir = '/work2/noaa/wrfruc/murdzek/nature_run_spring/obs/eval_sfc_station/perfect_csv/'
+analysis_days = [dt.datetime(2022, 4, 29) + dt.timedelta(days=i) for i in range(8)]
+#analysis_days = [dt.datetime(2022, 2, 1) + dt.timedelta(days=i) for i in range(7)]
 analysis_times = [dt.timedelta(hours=i) for i in range(24)]
 
 # Maximum time allowed between analysis_times and either the real or fake ob (sec)
@@ -83,7 +84,7 @@ ceil_thres = [0.1524, 0.3048, 0.9144]
 # If use_pickle is True, then the script will attempt to read the pickle file specified. If the file
 # is not found, that file will be written to.
 use_pickle = True
-pickle_fname = './sfc_station_compare_winter.pkl'
+pickle_fname = './sfc_station_compare_spring_2022.pkl'
 
 # Output file name (include %s placeholder for station ID)
 out_fname = '%s_sfc_station_compare_perfect.png'
