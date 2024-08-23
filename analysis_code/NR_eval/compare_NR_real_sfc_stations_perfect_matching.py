@@ -47,7 +47,7 @@ enddate = '02080000'
 
 # Parameters for fake obs
 # analysis_times are dt.timedelta objects relative to 0000
-fake_obs_dir = '/work2/noaa/wrfruc/murdzek/nature_run_winter/obs/eval_sfc_station/perfect_csv/'
+fake_obs_dir = '/work2/noaa/wrfruc/murdzek/nature_run_winter/obs/eval_sfc_station_ceil_exp2/perfect_csv/'
 #analysis_days = [dt.datetime(2022, 4, 29) + dt.timedelta(days=i) for i in range(8)]
 analysis_days = [dt.datetime(2022, 2, 1) + dt.timedelta(days=i) for i in range(7)]
 analysis_times = [dt.timedelta(hours=i) for i in range(24)]
@@ -88,7 +88,7 @@ ceil_thres = [0.1524, 0.3048, 0.9144]
 # If use_pickle is True, then the script will attempt to read the pickle file specified. If the file
 # is not found, that file will be written to.
 use_pickle = True
-pickle_fname = './sfc_station_compare_winter.pkl'
+pickle_fname = './sfc_station_ceil_exp2_compare_winter.pkl'
 
 # Output file name (include %s placeholder for station ID)
 out_fname = '%s_sfc_station_compare_perfect.png'
@@ -114,19 +114,19 @@ if use_pickle:
 else:
     pickle_avail = False
 
+# Variables to extract
+real_varnames = ['lon', 'lat', 'tmpf', 'dwpf', 'drct', 'sknt', 'alti', 'vsby', 'elevation']
+fake_varnames = ['TOB', 'QOB', 'POB', 'UOB', 'VOB', 'WSPD', 'WDIR']
+fake_varnames_noplot = ['ELV', 'ceil']
+
+# Extract some values that will be used a lot
+ndays = len(analysis_days)
+ntimes = len(analysis_times)
+analysis_year = analysis_days[0].year
+min_hr = -max_time_allowed / 3600.
+max_hr = max_time_allowed / 3600.
+
 if not pickle_avail:
-
-    # Variables to extract
-    real_varnames = ['lon', 'lat', 'tmpf', 'dwpf', 'drct', 'sknt', 'alti', 'vsby', 'elevation']
-    fake_varnames = ['TOB', 'QOB', 'POB', 'UOB', 'VOB', 'WSPD', 'WDIR']
-    fake_varnames_noplot = ['ELV', 'ceil']
-
-    # Extract some values that will be used a lot
-    ndays = len(analysis_days)
-    ntimes = len(analysis_times)
-    analysis_year = analysis_days[0].year
-    min_hr = -max_time_allowed / 3600.
-    max_hr = max_time_allowed / 3600.
 
     # Extract real surface station obs first
     real_stations = {}
@@ -376,10 +376,20 @@ if not pickle_avail:
             # Ceiling obs
             fake_station_rank[ID]['ceil'] = np.zeros(len(ceil_thres))
             for j in range(len(ceil_thres)):
-                combined_array = np.array([fake_stations[ID]['frac_ceil_thres'][j]] +
-                                           list(real_stations[ID]['frac_ceil_thres'][j, :]))
-                combined_array = combined_array[~np.isnan(combined_array)]
-                fake_station_rank[ID]['ceil'][j] = np.where(np.argsort(combined_array) == 0)[0][0] / (combined_array.size - 1)
+                # Special case if frac_ceil_thres = 0 or 1. Don't want to set rank to 0 (1) if some 
+                # of the years in the climo also have frac_ceil_thres = 0 (1). Place NR in the 
+                # middle of the 0s (1s) instead
+                if np.isclose(fake_stations[ID]['frac_ceil_thres'][j], 0):
+                    fake_station_rank[ID]['ceil'][j] = (np.ceil(0.5*np.sum(np.isclose(real_stations[ID]['frac_ceil_thres'][j, :], 0))) / 
+                                                        len(real_stations[ID]['frac_ceil_thres'][j, :]))
+                elif np.isclose(fake_stations[ID]['frac_ceil_thres'][j], 1):
+                    fake_station_rank[ID]['ceil'][j] = (np.ceil(0.5*np.sum(np.isclose(real_stations[ID]['frac_ceil_thres'][j, :], 1))) / 
+                                                        len(real_stations[ID]['frac_ceil_thres'][j, :]))
+                else:
+                    combined_array = np.array([fake_stations[ID]['frac_ceil_thres'][j]] +
+                                               list(real_stations[ID]['frac_ceil_thres'][j, :]))
+                    combined_array = combined_array[~np.isnan(combined_array)]
+                    fake_station_rank[ID]['ceil'][j] = np.where(np.argsort(combined_array) == 0)[0][0] / (combined_array.size - 1)
             all_rank['ceil'][i, :] = fake_station_rank[ID]['ceil']
 
     # Save output to pickle file for use later

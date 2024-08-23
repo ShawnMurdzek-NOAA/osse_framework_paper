@@ -33,8 +33,8 @@ import cartopy.crs as ccrs
 
 # Input pickle files
 parent_dir = '../analysis_code/NR_eval'
-pickle_winter_fname = parent_dir + '/sfc_station_compare_winter.pkl'
-pickle_spring_fname = parent_dir + '/sfc_station_compare_spring.pkl'
+pickle_winter_fname = parent_dir + '/sfc_station_ceil_exp2_compare_winter.pkl'
+pickle_spring_fname = parent_dir + '/sfc_station_ceil_exp2_compare_spring.pkl'
 
 # Surface station information
 with open('station_list.txt', 'r') as fptr:
