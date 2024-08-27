@@ -3,5 +3,7 @@ figs/
 *.pdf
 *.png
 *.pkl
+*.npy
+slurm*
 
 figs_old/
