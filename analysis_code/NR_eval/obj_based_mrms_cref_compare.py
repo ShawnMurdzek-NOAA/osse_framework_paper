@@ -62,10 +62,10 @@ min_size = 9
 # Optional: Link to MRMS and NR masks (these should be .npy objects). Set to None if not being used
 # Masks are created by the make_NR_MRMS_coverage_mask.py program
 if model == 'NR':
-    NR_mask_file = './NR_mask.npy'
+    NR_mask_file = './NR_mask_999.npy'
 elif model == 'HRRR':
-    NR_mask_file = './HRRR_mask.npy'
-MRMS_mask_file = './MRMS_mask.npy'
+    NR_mask_file = './HRRR_mask_999.npy'
+MRMS_mask_file = './MRMS_mask_999.npy'
 
 # Option to save/use output from a pickle file
 # If use_pickle is True, then the script will attempt to read the pickle file specified. If the file
