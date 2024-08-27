@@ -100,7 +100,7 @@ if __name__ == '__main__':
     # Make plot
     ds = []
     fig, ax = plt.subplots(nrows=1, ncols=1, sharex=True, sharey=True, figsize=(6, 8))
-    plt.subplots_adjust(top=0.97, bottom=0.08, right=0.97)
+    plt.subplots_adjust(top=0.97, bottom=0.08, left=0.15, right=0.97)
     for fname, ttl, c in zip([NR_output, RRFS_output], ['NR', 'RRFS'], ['r', 'b']):
 
         print()
@@ -116,12 +116,14 @@ if __name__ == '__main__':
         plot_dp_dist(ds[-1], ax, idx[0], idx[1], ttl, plt_kw={'c':c, 'lw':2.5, 'label':ttl})
 
     # Add annotations
+    ax.axhline(850, color='k', linestyle='--')
     ax.legend(fontsize=14)
     ax.grid()
     ax.set_xlim(left=0)
     ax.set_ylim([1020, 0])
-    ax.set_xlabel('dp (hPa)', size=14)
-    ax.set_ylabel('pressure (hPa)', size=14)
+    ax.set_xlabel('dp (hPa)', size=16)
+    ax.set_ylabel('pressure (hPa)', size=16)
+    ax.tick_params(which='major', axis='both', labelsize=12)
 
     plt.savefig(save_fname)
 

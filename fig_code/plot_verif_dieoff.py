@@ -110,7 +110,7 @@ save_fname = '../figs/VerifSfcDieOff.pdf'
 #---------------------------------------------------------------------------------------------------
 
 fig, axes = plt.subplots(ncols=len(seasons), nrows=4, figsize=(7, 8), sharex=True, sharey='row')
-plt.subplots_adjust(left=0.12, bottom=0.07, right=0.99, top=0.9, wspace=0.1, hspace=0.2)
+plt.subplots_adjust(left=0.12, bottom=0.07, right=0.98, top=0.9, wspace=0.1, hspace=0.2)
 
 for i, season in enumerate(seasons):
     for j, var in enumerate(['TMP', 'SPFH', 'UGRD_VGRD', 'PMO']):
