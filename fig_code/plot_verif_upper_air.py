@@ -119,6 +119,10 @@ for i, season in enumerate(seasons):
         #if j == 1:
         #   ax.ticklabel_format(axis='x', style='sci', scilimits=(0,0)) 
 
+        # Adjust x axis of wind RMSE plot so it doesn't overlap with Q RMSE plot
+        if j == 2:
+            ax.set_xlim([1.6, 6.75])
+
 # Subplot labels
 if len(seasons) == 1:
     letters = ['a', 'b', 'c']
